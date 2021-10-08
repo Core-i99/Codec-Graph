@@ -4,18 +4,28 @@
 
 import os, time, datetime
 
-dir = input('Drag & Drop The CodecGraph Directory: ')
-print("The dir is set to: " + dir + "\n")
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+working_dir = os.getcwd()
+print("\n" + "Current working directory: {0}".format(working_dir) + "\n")
+
+
 inputfile = input("Select codec dump: " + "\n")
 
-setoutputfilename = input('Would you like to set a output file name? (default = no)')
+setoutputfilename = input("\n" + 'Would you like to set a output file name? (default = no)' + "\n")
 if setoutputfilename in ['yes', 'Yes', 'Y', 'y']:
-  print("Great," + '!')
+  print("\n" + "Great!" + "\n")
   outputname = input("Select output file name: " + "\n")
-  open = os.system(dir+"/1-codecgraph/codecgraph" + " -o " + outputname + " " + inputfile)
+  printoutputfilename = print("\n" + "The output file name is set to: " + outputname + "\n")
+  open = os.system(working_dir + "/1-codecgraph/codecgraph" + " -o " + outputname + " " + inputfile)
+
 else:
-  print ("Sorry for asking... Script will now continue")
-  open = os.system(dir+"/1-codecgraph/codecgraph" + " " + inputfile)
+  print ("Sorry for asking... Script will now continue"+ "\n")
+  open = os.system(working_dir+ "/1-codecgraph/codecgraph" + " " + inputfile) 
+
+
+
+
+
 
 
 #end of script
