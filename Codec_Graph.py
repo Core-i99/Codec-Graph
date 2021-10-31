@@ -1,15 +1,30 @@
-# Codec Graph
+# Script to generate graphviz graphs from HDA-Intel codec information
 # Copyright Easy Hackintoshing 2021
 # By TheHackGuy
 
-import os, time, datetime
+import os, time, datetime,subprocess
+
+#check Graphviz
+print("\n" + "checking if Graphviz is installed... please wait (a sec)")
+checkGraphviz = subprocess.run(['which', 'dot'], 
+    #block the output
+    stdout= subprocess.DEVNULL)
+
+if checkGraphviz.returncode != 0:
+    print("Couldn't find Graphviz. Do you have Graphviz installed?")
+if checkGraphviz.returncode != 1:
+    print("Found graphviz")
+
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 working_dir = os.getcwd()
 print("\n" + "Current working directory: {0}".format(working_dir) + "\n")
 
 
+
 inputfile = input("Select codec dump: " + "\n")
+
+
 
 setoutputfilename = input("\n" + 'Would you like to set a output file name? (default = no)' + "\n")
 if setoutputfilename in ['yes', 'Yes', 'Y', 'y']:
