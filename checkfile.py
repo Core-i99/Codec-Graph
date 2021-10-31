@@ -12,3 +12,6 @@ if my_file.is_file():
     print("found")
 else:
     print("not found")
+
+    
+    https://www.makeuseof.com/check-if-a-file-exists-using-python/
