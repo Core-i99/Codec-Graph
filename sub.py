@@ -4,7 +4,7 @@
 
 import subprocess
 
-checkGraphviz = subprocess.run(['/Users/stijnrombouts/Documents/GitHub/Codec-Graph/dump.txt'], 
+checkGraphviz = subprocess.run(['test', '-e' '/Users/stijnrombDocuments/GitHub/Codec-Graph/dump.txt'], 
     #block the output
     stdout= subprocess.DEVNULL)
 
