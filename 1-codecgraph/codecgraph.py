@@ -22,7 +22,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-import re, sys
+import re, sys, os
 
 ALL_NODES = False
 
@@ -50,7 +50,7 @@ def parse_items(level, lines):
 		yield parse_item(linelvl, lines)
 
 def coloravg(a, b, v):
-	r = tuple([int(a[i]*(1-v) + b[i]*v) for i in 0,1,2])
+	r = tuple([int(a[i]*(1-v) + b[i]*v) for i in (0,1,2)])
 	return r
 
 def formatcolor(c):
@@ -66,7 +66,7 @@ class Amplifier:
 	def set_values(self, values):
 		self.values = values
 		self.gainvalues = [v & 0x7f for v in values]
-		self.mutevalues = [(v & 0x80) <> 0 for v in values]
+		self.mutevalues = [(v & 0x80)!= 0 for v in values]
 
 	def color(self):
 		if True in self.mutevalues:
@@ -287,7 +287,7 @@ class Node:
 
 	def label(self):
 		r = '0x%02x' % (self.nid)
-		print '// %r' % (self.fields)
+		print ('// %r') % (self.fields)
 		pdef = self.fields.get('Pin Default')
 		if pdef:
 			pdef,subdirs = pdef
@@ -474,11 +474,11 @@ class CodecInfo:
 				i.new_output(n.nid)
 
 	def dump(self):
-		print "Codec: %s" % (self.fields['Codec'])
-		print "Nodes: %d" % (len(self.nodes))
+		print ("Codec: %s") % (self.fields['Codec'])
+		print ("Nodes: %d") % (len(self.nodes))
 		for n in self.nodes.values():
-			print "Node: 0x%02x" % (n.nid),
-			print " %d conns" % (n.num_inputs)
+			print ("Node: 0x%02x") % (n.nid),
+			print (" %d conns") % (n.num_inputs)
 
 	def dump_graph(self, f):
 		f.write('digraph {\n')
@@ -490,9 +490,13 @@ class CodecInfo:
 		f.write('}\n')
 
 def main(argv):
-	f = open(argv[1], 'r')
+	inputfile = raw_input("drag the codec file: ")
+	print(inputfile)
+	f = open(inputfile, 'r')
 	ci = CodecInfo(f)
 	ci.dump_graph(sys.stdout)
 
 if __name__ == '__main__':
 	main(sys.argv)
+
+//https://stackoverflow.com/questions/7152762/how-to-redirect-print-output-to-a-file
