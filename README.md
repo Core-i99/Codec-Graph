@@ -1,6 +1,5 @@
 # Codec-Graph
-An application to make a Codec Graph from a Linux audio codec dump
-
+Script to generate Graphviz graphs from HDA-Intel codec information
 Credit to helllabs for making [the original Codec Graph](http://helllabs.org/codecgraph/)
 
 # Usage
