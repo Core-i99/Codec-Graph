@@ -1,5 +1,6 @@
 # Codec-Graph
 Script to generate Graphviz graphs from HDA-Intel codec information
+
 Credit to helllabs for making [the original Codec Graph](http://helllabs.org/codecgraph/)
 
 # Usage
