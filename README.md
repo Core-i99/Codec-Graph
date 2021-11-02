@@ -1,7 +1,7 @@
 # Codec-Graph
 An application to make a Codec Graph from a Linux audio codec dump
 
-Credit to [helllabs](http://helllabs.org/) for making [the original Codec Graph](http://helllabs.org/codecgraph/)
+Credit to helllabs for making [the original Codec Graph](http://helllabs.org/codecgraph/)
 
 # Usage
 - Make sure python3 is installed!
