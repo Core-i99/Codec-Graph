@@ -490,9 +490,7 @@ class CodecInfo:
 		f.write('}\n')
 
 def main(argv):
-	inputfile = raw_input("drag the codec file: ")
-	print(inputfile)
-	f = open(inputfile, 'r')
+	f = open(argv[1], 'r')
 	ci = CodecInfo(f)
 	ci.dump_graph(sys.stdout)
 
