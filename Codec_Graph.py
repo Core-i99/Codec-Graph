@@ -4,6 +4,11 @@
 
 import os, time, datetime,subprocess, webbrowser
 
+# todo:
+# store the files for graphviz itself in tmp directory
+# add decimal dumps
+# update the main script completely to python3 
+
 debug = 0
 
 #heading
@@ -72,33 +77,38 @@ if checkinputfile == 0:
   exit()  
 
 #outputfilename
-setoutputfilename = input("\n" + 'Would you like to set a output file name? (default = no)' + "\n")
-if setoutputfilename in ['yes', 'Yes', 'Y', 'y']:
-  print("\n" + "Great!" + "\n")
-  outputname = input("Select output file name: " + "\n")
-  if debug ==1:
-    printoutputfilename = print("\n" + "The output file name is set to: " + outputname + "\n")
-  open = os.system(working_dir + "/1-codecgraph/codecgraph" + " -o " + outputname + " " + inputfile)
-  if open != 0:
-    print("The script failed. Please check permissions")
-    if debug ==1:
-      print(open)
-    exit()
-  if debug ==1:
-    if open != 1:
-      print(open)
-      print("Script has been successfully executed")
+# todo: update this part to only use the python script
+# setoutputfilename = input("\n" + 'Would you like to set a output file name? (default = no)' + "Options: Y or N" "\n")
+# if setoutputfilename in ['yes', 'Yes', 'Y', 'y']:
+#   print("\n" + "Great!" + "\n")
+#   outputname = input("Select output file name: " + "\n")
+#   if debug ==1:
+#     printoutputfilename = print("\n" + "The output file name is set to: " + outputname + "\n")
+#   open = os.system(working_dir + "/1-codecgraph/codecgraph" + " -o " + outputname + " " + inputfile)
+#   if open != 0:
+#     print("The script failed. Please check permissions")
+#     if debug ==1:
+#       print(open)
+#     exit()
+#   if debug ==1:
+#     if open != 1:
+#       print(open)
+#       print("Script has been successfully executed")
 
 else:
   if debug == 1:
     print ("You choose to skip the custom output file name"+ "\n")
-  open = os.system(working_dir+ "/1-codecgraph/codecgraph" + " " + inputfile) 
+  open = os.system(working_dir+ "/1-codecgraph/codecgraph.py" + " " + inputfile +  " > " + inputfile + "-graphviz.txt") 
   if open != 0:
     print("The script failed. Please check permissions")
     exit()
   if debug ==1:
     if open!= 1:
-      print("Script has been successfully executed")
+      print("The input file was found")
+  #usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
+  outputfile = working_dir + "dump"
+  rungraphviz = os.system("dot -Tsvg -o" + "dump.svg " + " codec_dump.txt-graphviz.txt"  )
+  # add decimal dump
 
 #end of script
 os.system('clear')
