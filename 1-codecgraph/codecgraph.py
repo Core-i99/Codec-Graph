@@ -498,5 +498,3 @@ def main(argv):
 
 if __name__ == '__main__':
 	main(sys.argv)
-
-//https://stackoverflow.com/questions/7152762/how-to-redirect-print-output-to-a-file
