@@ -11,3 +11,7 @@ Credit to helllabs for making [the original Codec Graph](http://helllabs.org/cod
 - python3 ./Codec_Graph.py
 
 The output files will be generated in the output folder.
+
+# FAQ
+### Error: "Couldn't find Graphviz."
+- This means Graphviz isn't installed. Follow the [instructions](https://github.com/TheHackGuy/Codec-Graph/blob/V1/Graphviz%20Instructions.pdf) to install Graphviz.
