@@ -5,34 +5,28 @@
 import os, time, datetime,subprocess, webbrowser
 
 # todo:
-# store the files for graphviz itself in tmp directory
-# let the graph output to an output directory
-# add decimal dumps
 # update the main script completely to python3 
 
 debug = 0
 
-#heading
+# heading
 terminalwith = os.get_terminal_size().columns
 print("\033[1;31m")
 os.system('clear')
 print(("# Welcome to Codec Graph - Script to generate graphviz graphs from HDA-Intel codec information #").center(terminalwith))
 print(("# © Copyright Easy Hackintoshing 2021 - Brought you by TheHackGuy and Helllabs #").center(terminalwith))
 
-#normal text color
+# normal text color
 print("\033[0;30m")
 print("\n \n \n" )
 
-#debug mode
+# debug mode
 setdebug = input('Would you like to enable debug mode? (default = no) '+ "Options: Y or N \n" )
 if setdebug in ['yes', 'Yes', 'Y', 'y']:
   debug = 1
   print("\n" + "Enabled debug mode")
 else:
   debug = 0
-  print("The script will continue with debug mode disabled.\n")
-
-
 
 if debug == 1:
   print("\n" + "Checking if Graphviz is installed... please wait (a sec)")
@@ -59,13 +53,13 @@ if checkGraphviz.returncode != 1:
   if debug ==1:
       print("Found graphviz")
 
-#working directory
+# working directory
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 working_dir = os.getcwd()
 if debug == 1:
   print("\n" + "Current working directory: {0}".format(working_dir) + "\n")
 
-#input file
+# input file
 inputfile = input("Drag & drop the codec dump: " + "\n").strip()
 checkinputfile = os.path.isfile(inputfile)
 if debug == 1:
@@ -77,51 +71,57 @@ if checkinputfile == 0:
   print("Script will now exit")
   exit()  
 
-#outputfilename
-# todo: update this part to only use the python script
-# setoutputfilename = input("\n" + 'Would you like to set a output file name? (default = no)' + "Options: Y or N" "\n")
-# if setoutputfilename in ['yes', 'Yes', 'Y', 'y']:
-#   print("\n" + "Great!" + "\n")
-#   outputname = input("Select output file name: " + "\n")
-#   if debug ==1:
-#     printoutputfilename = print("\n" + "The output file name is set to: " + outputname + "\n")
-#   open = os.system(working_dir + "/1-codecgraph/codecgraph" + " -o " + outputname + " " + inputfile)
-#   if open != 0:
-#     print("The script failed. Please check permissions")
-#     if debug ==1:
-#       print(open)
-#     exit()
-#   if debug ==1:
-#     if open != 1:
-#       print(open)
-#       print("Script has been successfully executed")
-
+# outputfilename
+setoutputfilename = input("\n" + 'Would you like to set a output file name? (default = no) Options: Y or N \n')
+if setoutputfilename in ['yes', 'Yes', 'Y', 'y']:
+  print("\n" + "Great!" + "\n")
+  outputname = input("Choose the output file name: " + "\n")
+  if debug ==1:
+    printoutputfilename = print("\n" + "The output file name is set to: " + outputname + "\n")
+  
 else:
   if debug == 1:
     print ("You choose to skip the custom output file name"+ "\n")
-  open = os.system(working_dir+ "/1-codecgraph/codecgraph.py" + " " + inputfile +  " > " + "dotfile.txt") 
-  if open != 0:
-    print("Couldn't found /1-codecgraph/codecgraph.py. Please check permissions")
-    exit()
-  if debug ==1:
-    if open!= 1:
-      print("The input file was found")
-  #usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
-  rungraphviz = os.system("dot -Tsvg -ocodecdump.svg dotfile.txt")
-  if rungraphviz != 0:
-    print("Running graphviz failed. The script wil now exit")
-    exit()
-  if debug ==1:
-    if open!= 1:
-      print("Running Graphviz succeed") 
-  # add decimal dump
-  makedecimal = os.system("./hex2dec.rb codecdump.svg > codecdumpdec.svg")
-  if makedecimal != 0:
-    print("Making the decimal dump failed. Please check permissions")
-  if debug != 1:
-    if open != 1:
-      print("Making the decimal dump succeed")
-  
+  outputname = "codecdump"
+open = os.system(working_dir+ "/scripts/codecgraph.py " + inputfile +  " > " + "tmp/dotfile.txt") 
+if open != 0:
+  print("Couldn't found /scripts/codecgraph.py. Please check permissions")
+  exit()
+if debug ==1:
+  if open!= 1:
+    print("The main script was found")
+
+outputfilename = outputname + ".svg"
+
+# running graphviz
+# usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
+rungraphviz = os.system("dot -Tsvg -o./output/" + outputfilename +  " tmp/dotfile.txt")
+if debug ==1:
+  if rungraphviz!= 1:
+    print("Running Graphviz succeed") 
+
+if rungraphviz != 0:
+  print("Running graphviz failed. The script wil now exit")
+  exit()
+
+# removing the dorfile
+removedotfile = os.system("rm ./tmp/dotfile.txt ")
+if removedotfile != 0:
+  print("Removing the dotfile failed.")
+if debug == 1: 
+  if removedotfile != 1:
+    print("Removing the dorfile succeed")
+
+# create decimal dump
+makedecimal = os.system("./scripts/hex2dec.rb ./output/" + outputfilename + " > ./output/" + outputname + "dec.svg")
+if makedecimal != 0:
+  print("Making the decimal dump failed. Please check permissions")
+  if debug == 1:
+    print('Command used to make the decimal dump: ' + makedecimal)
+if debug == 1:
+  if open != 1:
+    print("Making the decimal dump succeed")
+
 #end of script
 os.system('clear')
 print("The output file has been placed in the Codec Graph directory \n")
@@ -137,4 +137,4 @@ elif hr >= 12 and hr < 17:
 elif hr >= 17 and hr < 21:
     print("Have a nice evening!\n\n")
 else:
-    print("Have a nice night! And don't forget to sleep!\n\n")
+    print("Have a nice night! (And don't forget to sleep!)\n\n")
