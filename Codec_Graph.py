@@ -6,6 +6,7 @@ import os, time, datetime,subprocess, webbrowser
 
 # todo:
 # store the files for graphviz itself in tmp directory
+# let the graph output to an output directory
 # add decimal dumps
 # update the main script completely to python3 
 
@@ -23,7 +24,7 @@ print("\033[0;30m")
 print("\n \n \n" )
 
 #debug mode
-setdebug = input('Would you like to enable debug mode? (default = no)')
+setdebug = input('Would you like to enable debug mode? (default = no) '+ "Options: Y or N \n" )
 if setdebug in ['yes', 'Yes', 'Y', 'y']:
   debug = 1
   print("\n" + "Enabled debug mode")
@@ -34,7 +35,7 @@ else:
 
 
 if debug == 1:
-  print("\n" + "checking if Graphviz is installed... please wait (a sec)")
+  print("\n" + "Checking if Graphviz is installed... please wait (a sec)")
 checkGraphviz = subprocess.run(['which', 'dot'], stdout= subprocess.DEVNULL)
 if checkGraphviz.returncode != 0:
       print("\n" + "Couldn't find Graphviz.")
@@ -100,14 +101,19 @@ else:
     print ("You choose to skip the custom output file name"+ "\n")
   open = os.system(working_dir+ "/1-codecgraph/codecgraph.py" + " " + inputfile +  " > " + inputfile + "-graphviz.txt") 
   if open != 0:
-    print("The script failed. Please check permissions")
+    print("Couldn't found /1-codecgraph/codecgraph.py. Please check permissions")
     exit()
   if debug ==1:
     if open!= 1:
       print("The input file was found")
   #usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
-  outputfile = working_dir + "dump"
-  rungraphviz = os.system("dot -Tsvg -o" + "dump.svg " + " codec_dump.txt-graphviz.txt"  )
+  rungraphviz = os.system("dot -Tsvg -O" + " codec_dump.txt-graphviz.txt"  )
+  if rungraphviz != 0:
+    print("Running graphviz failed. The script wil now exit")
+    exit()
+  if debug ==1:
+    if open!= 1:
+      print("Running Graphviz succeed") 
   # add decimal dump
 
 #end of script
