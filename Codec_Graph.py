@@ -99,7 +99,7 @@ if checkinputfile == 0:
 else:
   if debug == 1:
     print ("You choose to skip the custom output file name"+ "\n")
-  open = os.system(working_dir+ "/1-codecgraph/codecgraph.py" + " " + inputfile +  " > " + inputfile + "-graphviz.txt") 
+  open = os.system(working_dir+ "/1-codecgraph/codecgraph.py" + " " + inputfile +  " > " + "dotfile.txt") 
   if open != 0:
     print("Couldn't found /1-codecgraph/codecgraph.py. Please check permissions")
     exit()
@@ -107,7 +107,7 @@ else:
     if open!= 1:
       print("The input file was found")
   #usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
-  rungraphviz = os.system("dot -Tsvg -O" + " codec_dump.txt-graphviz.txt"  )
+  rungraphviz = os.system("dot -Tsvg -ocodecdump.svg dotfile.txt")
   if rungraphviz != 0:
     print("Running graphviz failed. The script wil now exit")
     exit()
@@ -115,7 +115,13 @@ else:
     if open!= 1:
       print("Running Graphviz succeed") 
   # add decimal dump
-
+  makedecimal = os.system("./hex2dec.rb codecdump.svg > codecdumpdec.svg")
+  if makedecimal != 0:
+    print("Making the decimal dump failed. Please check permissions")
+  if debug != 1:
+    if open != 1:
+      print("Making the decimal dump succeed")
+  
 #end of script
 os.system('clear')
 print("The output file has been placed in the Codec Graph directory \n")
