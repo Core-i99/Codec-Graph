@@ -6,6 +6,7 @@ Credit to helllabs for making [the original Codec Graph](http://helllabs.org/cod
 # Usage
 - Make sure python3 is installed!
 
+- Download Codec Graph from the Relase page
 - Open terminal
 - cd `Codec_Graph_directory`
 - python3 ./Codec_Graph.py
