@@ -71,18 +71,26 @@ if checkinputfile == 0:
   print("Script will now exit")
   exit()  
 
+
+
 # outputfilename
 setoutputfilename = input("\n" + 'Would you like to set a output file name? (default = no) Options: Y or N \n')
 if setoutputfilename in ['yes', 'Yes', 'Y', 'y']:
   print("\n" + "Great!" + "\n")
   outputname = input("Choose the output file name: " + "\n")
-  if debug ==1:
+  if debug == 1:
     printoutputfilename = print("\n" + "The output file name is set to: " + outputname + "\n")
   
 else:
   if debug == 1:
     print ("You choose to skip the custom output file name"+ "\n")
   outputname = "codecdump"
+
+#create folders
+createtemp = os.mkdir("tmp")
+
+createoutput = os.mkdir("output")
+
 open = os.system(working_dir+ "/scripts/codecgraph.py " + inputfile +  " > " + "tmp/dotfile.txt") 
 if open != 0:
   print("Couldn't found /scripts/codecgraph.py. Please check permissions")
@@ -104,13 +112,13 @@ if rungraphviz != 0:
   print("Running graphviz failed. The script wil now exit")
   exit()
 
-# removing the dorfile
-removedotfile = os.system("rm ./tmp/dotfile.txt ")
+# removing the temp folder
+removedotfile = os.system("rm -r ./tmp/ ")
 if removedotfile != 0:
-  print("Removing the dotfile failed.")
+  print("Removing the temp folder failed.")
 if debug == 1: 
   if removedotfile != 1:
-    print("Removing the dorfile succeed")
+    print("Removing the temp folder succeed")
 
 # create decimal dump
 makedecimal = os.system("./scripts/hex2dec.rb ./output/" + outputfilename + " > ./output/" + outputname + "dec.svg")
@@ -124,7 +132,7 @@ if debug == 1:
 
 #end of script
 os.system('clear')
-print("The output file has been placed in the Codec Graph directory \n")
+print("The output file has been placed in the output directory \n")
 print("Thanks for Using Codec Graph Written By TheHackGuy - © Copytight Easy Hackintoshing 2021\n")
 print("Check out my GitHub:\n")
 print("https://github.com/TheHackGuy\n\n")
