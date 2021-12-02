@@ -14,8 +14,7 @@ Credit to helllabs for making [the original Codec Graph](http://helllabs.org/cod
 The output files will be generated in the output folder.
 
 
-Node shape and colors:
-
+# Node shape and colors
 - Amplifier:	triangle
 - Audio input:	red ellipse
 - Audio output:	blue ellipse
