@@ -16,12 +16,12 @@ The output files will be generated in the output folder.
 
 Node shape and colors:
 
-Amplifier:	triangle
-Audio input:	red ellipse
-Audio output:	blue ellipse
-Audio selector:	parallelogram
-Audio mixer:	hexagon
-Pin complex:	rectangle
+- Amplifier:	triangle
+- Audio input:	red ellipse
+- Audio output:	blue ellipse
+- Audio selector:	parallelogram
+- Audio mixer:	hexagon
+- Pin complex:	rectangle
 
 
 # FAQ
