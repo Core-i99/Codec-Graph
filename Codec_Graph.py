@@ -1,6 +1,6 @@
 # Script to generate graphviz graphs from HDA-Intel codec information
-# Copyright Easy Hackintoshing 2021
-# By TheHackGuy
+# Copyright TheHackGuy - 2021
+# Written by TheHackGuy
 
 import os, time, datetime,subprocess, webbrowser
 
@@ -14,7 +14,7 @@ terminalwith = os.get_terminal_size().columns
 print("\033[1;31m")
 os.system('clear')
 print(("# Welcome to Codec Graph - Script to generate graphviz graphs from HDA-Intel codec information #").center(terminalwith))
-print(("# © Copyright Easy Hackintoshing 2021 - Brought you by TheHackGuy and Helllabs #").center(terminalwith))
+print(("# © TheHackGuy 2021 - Brought you by TheHackGuy and Helllabs #").center(terminalwith))
 
 # normal text color
 print("\033[0;30m")
@@ -133,7 +133,7 @@ if debug == 1:
 #end of script
 os.system('clear')
 print("The output file has been placed in the output directory \n")
-print("Thanks for Using Codec Graph Written By TheHackGuy - © Copytight Easy Hackintoshing 2021\n")
+print("Thanks for Using Codec Graph Written By TheHackGuy - © TheHackGuy 2021\n")
 print("Check out my GitHub:\n")
 print("https://github.com/TheHackGuy\n\n")
 
