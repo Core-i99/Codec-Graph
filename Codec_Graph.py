@@ -2,7 +2,7 @@
 # Copyright Easy Hackintoshing 2021
 # By TheHackGuy
 
-import os, time, datetime,subprocess, webbrowser
+import os, time, datetime,subprocess, webbrowser, shutil
 
 # todo:
 # update the main script completely to python3 
@@ -87,9 +87,24 @@ else:
   outputname = "codecdump"
 
 #create folders
-createtemp = os.mkdir("tmp")
 
-createoutput = os.mkdir("output")
+createtemp = 'tmp'
+if os.path.exists(createtemp):
+    shutil.rmtree(createtemp)
+    if debug == 1:
+      print("Found an existing tmp directory")
+os.makedirs(createtemp)
+if debug == 1:
+      print("Created tmp directory")
+
+createoutput = 'output'
+if os.path.exists(createoutput):
+    shutil.rmtree(createoutput)
+    if debug == 1:
+      print("Found an existing output directory")
+os.makedirs(createoutput)
+if debug == 1:
+      print("Created output directory")
 
 open = os.system(working_dir+ "/scripts/codecgraph.py " + inputfile +  " > " + "tmp/dotfile.txt") 
 if open != 0:
