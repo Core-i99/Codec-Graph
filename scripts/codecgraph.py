@@ -3,10 +3,11 @@
 # Script to generate graphviz graphs from HDA-Intel codec information
 #
 # by Eduardo Habkost <ehabkost@mandriva.com>
+# updated by Stijn Rombouts <stijnrombouts@outlook.com>
 #
 # Copyright (c) 2006,2007 Eduardo Habkost <ehabkost@mandriva.com>
 # Copyright (c) 2006,2007 Mandriva Conectiva
-#
+# Copyright (c) 2021,2022 Stijn Rombouts <stijnrombouts@outlook.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,9 +19,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# You should have received a copy of the GNU General Public License along with
+# this program. If not, see <http://www.gnu.org/licenses/>.
 
 import re, sys, os
 
