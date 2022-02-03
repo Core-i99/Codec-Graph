@@ -62,7 +62,8 @@ if debug == 1:
 
 # input file
 inputfile = input("Drag & drop the codec dump: " + "\n").strip()
-checkinputfile = os.path.isfile (inputfile)
+fixedinputfile = inputfile.replace("\\",  '')  #Remove the backslashes from the inputfile string. Otherwise checkinputfile will return false.
+checkinputfile = os.path.isfile (fixedinputfile)
 if debug == 1:
   print("\n" + "Checking the input file...please wait" + "\n")
   if checkinputfile == 1:
