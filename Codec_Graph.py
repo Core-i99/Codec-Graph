@@ -107,7 +107,7 @@ os.makedirs(createoutput)
 if debug == 1:
       print("Created output directory")
 
-open = os.system(working_dir+ "/scripts/codecgraph.py " + inputfile +  " > " + "tmp/dotfile.txt") 
+open = os.system("python3 " + working_dir + "/scripts/codecgraph.py " + inputfile +  " > " + "tmp/dotfile.txt")
 if open != 0:
   print("Couldn't found /scripts/codecgraph.py. Please check permissions")
   exit()
