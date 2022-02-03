@@ -59,7 +59,7 @@ if checkGraphviz.returncode != 0:
           print(timeformat, end='\r')
           time.sleep(1)
           time_sec -= 1  
-        webbrowser.open("https://github.com/Core-i99/Codec-Graph/blob/main/Graphviz%20Instructions.docx")
+        webbrowser.open("https://github.com/Core-i99/Codec-Graph/blob/main/Graphviz%20Instructions.md")
         if debug == 1:
           print("Opened webbrowser")
           print("script will now exit")
