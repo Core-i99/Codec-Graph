@@ -1,6 +1,6 @@
 # Script to generate graphviz graphs from HDA-Intel codec information
-# Copyright TheHackGuy - 2021
-# Written by TheHackGuy
+# Copyright Stijn Rombouts - 2021
+# Written by Core i99
 
 import os, time, datetime,subprocess, webbrowser, shutil
 
@@ -59,9 +59,10 @@ working_dir = os.getcwd()
 if debug == 1:
   print("\n" + "Current working directory: {0}".format(working_dir) + "\n")
 
+
 # input file
 inputfile = input("Drag & drop the codec dump: " + "\n").strip()
-checkinputfile = os.path.isfile(inputfile)
+checkinputfile = os.path.isfile (inputfile)
 if debug == 1:
   print("\n" + "Checking the input file...please wait" + "\n")
   if checkinputfile == 1:
@@ -148,7 +149,8 @@ if debug == 1:
 #end of script
 os.system('clear')
 print("The output file has been placed in the output directory \n")
-print("Thanks for Using Codec Graph Written By TheHackGuy - © TheHackGuy 2021\n")
+print("Thanks for using Codec Graph\n")
+print("Written By Core i99 - © Stijn Rombouts 2021\n")
 print("Check out my GitHub:\n")
 print("https://github.com/TheHackGuy\n\n")
 
