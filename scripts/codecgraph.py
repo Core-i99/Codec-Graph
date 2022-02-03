@@ -287,7 +287,7 @@ class Node:
 
 	def label(self):
 		r = '0x%02x' % (self.nid)
-		print ('// %r') % (self.fields)
+		print(('// %r') % (self.fields))
 		pdef = self.fields.get('Pin Default')
 		if pdef:
 			pdef,subdirs = pdef
@@ -469,23 +469,23 @@ class CodecInfo:
 		return n
 
 	def create_out_lists(self):
-		for n in self.nodes.values():
+		for n in list(self.nodes.values()):
 			for i in n.input_nodes():
 				i.new_output(n.nid)
 
 	def dump(self):
-		print ("Codec: %s") % (self.fields['Codec'])
-		print ("Nodes: %d") % (len(self.nodes))
-		for n in self.nodes.values():
-			print ("Node: 0x%02x") % (n.nid),
-			print (" %d conns") % (n.num_inputs)
+		print(("Codec: %s") % (self.fields['Codec']))
+		print(("Nodes: %d") % (len(self.nodes)))
+		for n in list(self.nodes.values()):
+			print(("Node: 0x%02x") % (n.nid), end=' ')
+			print((" %d conns") % (n.num_inputs))
 
 	def dump_graph(self, f):
 		f.write('digraph {\n')
 		f.write("""rankdir=LR
 		ranksep=3.0
 		""")
-		for n in self.nodes.values():
+		for n in list(self.nodes.values()):
 			n.dump_graph(f)
 		f.write('}\n')
 
