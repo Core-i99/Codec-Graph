@@ -2,9 +2,9 @@ CodecGraph Changelog
 ==================
 
 #### V1.2
-- Updated link to installing Graphviz instructions
+- Updated installing Graphviz instructions
 - Fixed the license
-- Fixed crach when the codec dump file path contains spaces
+- Fixed crash when the codec dump file path contains spaces
 - Updated the main script to Python3 
 
 #### v1.1
