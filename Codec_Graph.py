@@ -31,7 +31,7 @@ terminalwith = os.get_terminal_size().columns
 print("\033[1;31m")
 os.system('clear')
 print(("# Welcome to Codec Graph - Script to generate graphviz graphs from HDA-Intel codec information #").center(terminalwith))
-print(("# © TheHackGuy 2021 - Brought you by TheHackGuy and Helllabs #").center(terminalwith))
+print(("# © Core i99 2021 - Brought you by Core i99 and Helllabs #").center(terminalwith))
 
 # normal text color
 print("\033[0;30m")
@@ -170,7 +170,7 @@ print("The output file has been placed in the output directory \n")
 print("Thanks for using Codec Graph\n")
 print("Written By Core i99 - © Stijn Rombouts 2021\n")
 print("Check out my GitHub:\n")
-print("https://github.com/TheHackGuy\n\n")
+print("https://github.com/Core-i99/\n\n")
 
 hr = datetime.datetime.now().time().hour
 if hr > 3 and hr < 12:
