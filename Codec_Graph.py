@@ -21,9 +21,6 @@
 
 import os, time, datetime,subprocess, webbrowser, shutil
 
-# todo:
-# update the main script completely to python3 
-
 debug = 0
 
 # heading
