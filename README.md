@@ -1,10 +1,10 @@
 # Codec-Graph
 Script to generate Graphviz graphs from HDA-Intel codec information
 
-[![GitHub License](https://img.shields.io/github/license/Core-i99/Codec-Graph?color=informational)]("https://github.com/Core-i99/Codec-Graph/blob/master/LICENSE)
+[![GitHub License](https://img.shields.io/github/license/Core-i99/Codec-Graph?color=informational)](https://github.com/Core-i99/Codec-Graph/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/Core-i99/Codec-Graph)](https://GitHub.com/Core-i99/Codec-Graph/releases/)
 [![GitHub stars](https://img.shields.io/github/stars/Core-i99/Codec-Graph)](https://GitHub.com/Core-i99/Codec-Graph/stargazers/)
-[![GitHub Issues](https://img.shields.io/github/issues/Core-i99/Codec-Graph?color=informational)](https://github.comCore-i99/Codec-Graph/issues)
+[![GitHub Issues](https://img.shields.io/github/issues/Core-i99/Codec-Graph?color=informational)](https://github.com/Core-i99/Codec-Graph/issues)
 [![GitHub Pulls](https://img.shields.io/github/issues-pr/Core-i99/Codec-Graph?style=flat-square&color=informational)](https://GitHub.com/Core-i99/Codec-Graph/pull/)
 
 # Usage
