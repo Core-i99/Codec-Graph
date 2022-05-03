@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Helper Script to generate graphviz graphs from HDA-Intel codec information
 #
