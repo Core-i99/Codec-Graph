@@ -56,6 +56,10 @@ centerwindow() #center the gui window on the screen
 def showinfo():
      tkinter.messagebox.showinfo("About", "App to generate graphviz graphs from HDA-Intel codec information.\n\nCodec Graph version %s\n " % (Version))
 
+def DebugWrite(message):
+    if debug == True:
+        print(f"DEBUG: {message}")
+
 def ChangeDebug():  
     global debug
     if debug == False:
@@ -73,8 +77,7 @@ def CheckGraphviz():
         print(errormessage)
         if errormessage == "ok":
             webbrowser.open("https://github.com/Core-i99/Codec-Graph/blob/main/Graphviz%20Instructions.md")
-            if debug == True:
-                print("Opened instructions")
+            DebugWrite("Opened instructions")
 
     elif checkGraphviz.returncode == 0 and debug == 1:
         tkinter.messagebox.showinfo("Found graphviz", "Found graphviz installation")
@@ -85,22 +88,21 @@ def openFileClicked():
     ]
     inputfile = filedialog.askopenfilename(filetypes=filetypes)
     if inputfile != '': # if inputfile isn't an empty string (some file is selected)
-        if debug == True:
-            print("Selected Codec Dump: " + inputfile)
+        DebugWrite(f"Selected Codec Dump {inputfile}")
         def main(argv):
             print("here")
             f = open(inputfile, "r")
             ci = CodecInfo(f)
             ci.dump_graph(sys.stdout)
         if __name__ == '__main__':
-            main(sys.argv)   
+            main(sys.argv)
 
         # running graphviz
         # usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
         rungraphviz = os.system("dot -Tsvg -o./output/" + outputfilename +  " ./tmp/dotfile.txt")
-        if debug ==1:
-            if rungraphviz!= 1:
-                print("Running Graphviz succeed") 
+        
+        if rungraphviz!= 1:
+            DebugWrite("Running Graphviz succeed")
 
         if rungraphviz != 0:
             tkinter.messagebox.showerror("Running graphviz failed!\nPlease check if graphviz is installed using the button for it.")
@@ -108,9 +110,8 @@ def openFileClicked():
         removetmp() 
         CreateDecDump()
         end()
-        
-    elif debug == True:
-            print("Nothing Selected")    
+
+    else: DebugWrite("Nothing Selected")        
 
 def end(): #end of script
     os.system('clear')
@@ -149,45 +150,39 @@ fm5.pack(pady=10)
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 working_dir = os.getcwd()
 dotfile = working_dir + "/tmp/dotfile.txt"
-if debug == True:
-  print("\n" + "Current working directory: {0}".format(working_dir) + "\n")
-  print("Dotfile path: " + dotfile)
+DebugWrite(f"Current working directory: {working_dir}")
+DebugWrite(f"Dotfile path {dotfile}")
 
 def createtmp(): #create tmp folder
     createtmp = './tmp'
     if os.path.exists(createtmp):
         shutil.rmtree(createtmp)
-        if debug == True:
-            print("Found an existing tmp directory")
+        DebugWrite("Found an existing tmp directory")
     os.makedirs(createtmp)
-    if debug == True:
-        print("Created tmp directory")  
+    DebugWrite("Created tmp directory")
         
 def removetmp(): # removing the temp folder
     removedotfile = os.system("rm -r ./tmp/ ")
     if removedotfile != 0:
         print("Removing the temp folder failed.")
-    if debug == True: 
-        if removedotfile != 1:
-            print("Removing the temp folder succeed")
+    
+    if removedotfile != 1:
+        DebugWrite("Removing the temp folder succeed")
 
 def createoutputdir(): # Create output folder
     createoutput = 'output'
     if os.path.exists(createoutput):
         shutil.rmtree(createoutput) # Remove existing ouput folder
-        if debug == True:
-          print("Found an existing output directory")
+        DebugWrite("Found an existing output directory")
     os.makedirs(createoutput)
-    if debug == True:
-        print("Created output directory")
+    DebugWrite("Created output directory")
 
 def CreateDecDump(): # create decimal dump
     makedecimal = os.system("./scripts/hex2dec.rb ./output/" + outputfilename + " > ./output/" + outputname + "dec.svg")
     if makedecimal != 0:
         print("Making the decimal dump failed. Please check permissions")
-    if debug == True:
-        if open != 1:
-            print("Making the decimal dump succeed")  
+    if open != 1:
+        DebugWrite("Creating the decimal dump succeed")
 
 def indentlevel(line):
     """Return the indent level of a line"""
@@ -653,8 +648,7 @@ class CodecInfo:
         for n in list(self.nodes.values()):
             n.dump_graph(f)
         f.write('}\n')
-        if debug == True:
-            print("Wrote dotfile")
+        DebugWrite("Wrote dotfile")
         createoutputdir()
 
 root.protocol("WM_DELETE_WINDOW", end)
