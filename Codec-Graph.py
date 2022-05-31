@@ -22,7 +22,15 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
-import re, sys, os, webbrowser, time, shutil, datetime, subprocess, tkinter, tkinter.messagebox
+import re
+import sys
+import os
+import webbrowser
+import shutil
+import datetime
+import subprocess
+import tkinter
+import tkinter.messagebox
 from tkinter import filedialog
 
 Version = "V1.4"
@@ -43,7 +51,7 @@ fm4 = tkinter.Frame(root)
 fm5 = tkinter.Frame(root)
 
 def centerwindow():
-    app_height = 230
+    app_height = 250
     app_width = 500
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
@@ -53,8 +61,9 @@ def centerwindow():
 
 centerwindow() #center the gui window on the screen
 
+
 def showinfo():
-     tkinter.messagebox.showinfo("About", "App to generate graphviz graphs from HDA-Intel codec information.\n\nCodec Graph version %s\n " % (Version))
+    tkinter.messagebox.showinfo("About", "App to generate graphviz graphs from HDA-Intel codec information.\n\nCodec Graph version %s\n " % (Version))
 
 def DebugWrite(message):
     if debug == True:
@@ -79,7 +88,7 @@ def CheckGraphviz():
             webbrowser.open("https://github.com/Core-i99/Codec-Graph/blob/main/Graphviz%20Instructions.md")
             DebugWrite("Opened instructions")
 
-    elif checkGraphviz.returncode == 0 and debug == 1:
+    elif checkGraphviz.returncode == 0:
         tkinter.messagebox.showinfo("Found graphviz", "Found graphviz installation")
 
 def openFileClicked():
@@ -90,10 +99,9 @@ def openFileClicked():
     if inputfile != '': # if inputfile isn't an empty string (some file is selected)
         DebugWrite(f"Selected Codec Dump {inputfile}")
         def main(argv):
-            print("here")
             f = open(inputfile, "r")
             ci = CodecInfo(f)
-            ci.dump_graph(sys.stdout)
+            ci.dump_graph()
         if __name__ == '__main__':
             main(sys.argv)
 
@@ -101,15 +109,14 @@ def openFileClicked():
         # usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
         rungraphviz = os.system("dot -Tsvg -o./output/" + outputfilename +  " ./tmp/dotfile.txt")
         
-        if rungraphviz!= 1:
+        if rungraphviz == 0:
             DebugWrite("Running Graphviz succeed")
 
-        if rungraphviz != 0:
-            tkinter.messagebox.showerror("Running graphviz failed!\nPlease check if graphviz is installed using the button for it.")
+        if rungraphviz == 1:
+            tkinter.messagebox.showerror("Error", "Running graphviz failed!\nPlease check if graphviz is installed using the button for it.")
 
         removetmp() 
         CreateDecDump()
-        end()
 
     else: DebugWrite("Nothing Selected")        
 
@@ -129,15 +136,15 @@ def end(): #end of script
         print("Have a nice evening!\n\n")
     else:
         print("Have a nice night! (And don't forget to sleep!)\n\n")   
-    exit()    
+    sys.exit()    
 
 # Buttons and labels
-tkinter.Button(fm1, text='Select Codec Dump', command=openFileClicked).pack(side='left', expand=1)
-tkinter.Button(fm2, text="Check if Graphviz is installed", command = CheckGraphviz).pack(side='left', expand=1)
+tkinter.Button(fm1, text='Select Codec Dump', command=openFileClicked).pack()
+tkinter.Button(fm2, text="Check if Graphviz is installed", command = CheckGraphviz).pack()
 DebugButton = tkinter.Button(fm3, text='Enable debug mode', command=ChangeDebug)
-DebugButton.pack(side='left', expand=1)
-tkinter.Button(fm4, text="About", command=showinfo).pack(side='left', expand=1)
-tkinter.Button(fm5, text='Exit', command=end).pack(side='left', expand=1)
+DebugButton.pack()
+tkinter.Button(fm4, text="About", command=showinfo).pack()
+tkinter.Button(fm5, text='Exit', command=end).pack()
 
 # pack the frames
 fm1.pack(pady=10)
@@ -179,10 +186,11 @@ def createoutputdir(): # Create output folder
 
 def CreateDecDump(): # create decimal dump
     makedecimal = os.system("./scripts/hex2dec.rb ./output/" + outputfilename + " > ./output/" + outputname + "dec.svg")
-    if makedecimal != 0:
+    if makedecimal == 1:
         print("Making the decimal dump failed. Please check permissions")
-    if open != 1:
+    if makedecimal == 0:
         DebugWrite("Creating the decimal dump succeed")
+        tkinter.messagebox.showinfo("Finished", "Done! Look in the output folder.")
 
 def indentlevel(line):
     """Return the indent level of a line"""
@@ -440,7 +448,7 @@ class Node:
 
     def wcaps_label(self):
         not_shown = ['Amp-In', 'Amp-Out']
-        show = [cap for cap in self.wcaps if not cap in not_shown]
+        show = [cap for cap in self.wcaps if cap not in not_shown]
         return ' '.join(show)
 
     def label(self):
@@ -548,7 +556,6 @@ class Node:
         return False
 
     def dump_graph(self, f):
-        codec = self.codec
         name = "cluster-%s" % (self.idstring())
         if self.is_divided():
             f.write('subgraph "%s-in" {\n' % (name))
@@ -589,7 +596,7 @@ class CodecInfo:
         for item,subitems in parse_items(-1, lines):
             line = total_lines-len(lines)
             try:
-                if not ': ' in item and item.endswith(':'):
+                if ': '  not in item and item.endswith(':'):
                     # special case where there is no ": "
                     # but we want to treat it like a "key: value"
                     # line
@@ -609,7 +616,7 @@ class CodecInfo:
                     continue
                 else:
                     sys.stderr.write("Warning: line %d ignored: %s\n" % (line, item))
-            except:
+            except Exception:
                 sys.stderr.write('Exception around line %d\n' % (line))
                 sys.stderr.write('item: %r\n' % (item))
                 sys.stderr.write('subitems: %r\n' % (subitems))
@@ -638,18 +645,19 @@ class CodecInfo:
             print(("Node: 0x%02x") % (n.nid), end=' ')
             print((" %d conns") % (n.num_inputs))
 
-    def dump_graph(self, f):
+    def dump_graph(self):
         createtmp()
-        f = open(dotfile, "w")
-        f.write('digraph {\n')
-        f.write("""rankdir=LR
-        ranksep=3.0
-        """)
-        for n in list(self.nodes.values()):
-            n.dump_graph(f)
-        f.write('}\n')
-        DebugWrite("Wrote dotfile")
+        with open(dotfile, "w", encoding = 'utf-8') as file:
+            file.write('digraph {\n')
+            file.write("""rankdir=LR
+            ranksep=3.0
+            """)
+            for n in list(self.nodes.values()):
+                n.dump_graph(file)
+            file.write('}\n')
+            DebugWrite("Wrote dotfile")
         createoutputdir()
+
 
 root.protocol("WM_DELETE_WINDOW", end)
 root.mainloop()
