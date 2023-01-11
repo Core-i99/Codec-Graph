@@ -80,7 +80,8 @@ def ChangeDebug():
         DebugButton['text'] = 'Enable debug mode'
 
 def CheckGraphviz():
-    checkGraphviz = subprocess.run(['which', 'dot'], stdout= subprocess.DEVNULL)
+    checkGraphviz = subprocess.run(
+        ['dot', '-V'], stdout=subprocess.DEVNULL)
     if checkGraphviz.returncode == 1:
         errormessage = tkinter.messagebox.showerror("ERROR", "Couldn't find Graphviz Please follow the instructions to install Graphviz.\n\nClick OK to open instructions how to install GraphViz.")
         print(errormessage)
