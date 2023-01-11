@@ -167,16 +167,17 @@ def createtmp(): #create tmp folder
         DebugWrite("Found an existing tmp directory")
     os.makedirs(createtmp)
     DebugWrite("Created tmp directory")
-        
-def removetmp(): # removing the temp folder
-    removedotfile = os.system("rm -r ./tmp/ ")
-    if removedotfile != 0:
-        print("Removing the temp folder failed.")
-    
-    if removedotfile != 1:
-        DebugWrite("Removing the temp folder succeed")
 
-def createoutputdir(): # Create output folder
+
+def removetmp():  # removing the temp folder
+    removetmp = shutil.rmtree('./tmp/')
+    if os.path.exists("./tmp"):
+        DebugWrite("Removing tmp directory failed")
+    else:
+        DebugWrite("Removing tmp directory succeed")
+
+
+def createoutputdir():  # Create output folder
     createoutput = 'output'
     if os.path.exists(createoutput):
         shutil.rmtree(createoutput) # Remove existing ouput folder
