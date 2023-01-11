@@ -184,13 +184,23 @@ def createoutputdir(): # Create output folder
     os.makedirs(createoutput)
     DebugWrite("Created output directory")
 
-def CreateDecDump(): # create decimal dump
-    makedecimal = os.system("./scripts/hex2dec.rb ./output/" + outputfilename + " > ./output/" + outputname + "dec.svg")
-    if makedecimal == 1:
-        print("Making the decimal dump failed. Please check permissions")
-    if makedecimal == 0:
-        DebugWrite("Creating the decimal dump succeed")
-        tkinter.messagebox.showinfo("Finished", "Done! Look in the output folder.")
+
+def CreateDecDump():  # create decimal dump
+    DebugWrite("Creating decimal dump")
+    with open("./output/" + outputfilename, "r") as f:
+        data = f.readlines()
+        for index, line in enumerate(data):
+            hex_values = re.findall(r'0x[\dA-F]+', line)
+            for hex_value in hex_values:
+                dec_value = str(int(hex_value, 16))
+                line = line.replace(hex_value, dec_value)
+            data[index] = line
+    with open("./output/" + outputname + "dec.svg", "w") as f:
+        f.writelines(data)
+        DebugWrite("Created decimal svg")
+    tkinter.messagebox.showinfo(
+        "Finished", "Done! Look in the output folder.")
+
 
 def indentlevel(line):
     """Return the indent level of a line"""
