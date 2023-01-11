@@ -13,12 +13,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <http://www.gnu.org/licenses/>.
 
@@ -50,6 +50,7 @@ fm3 = tkinter.Frame(root)
 fm4 = tkinter.Frame(root)
 fm5 = tkinter.Frame(root)
 
+
 def centerwindow():
     app_height = 250
     app_width = 500
@@ -57,48 +58,60 @@ def centerwindow():
     screen_height = root.winfo_screenheight()
     x_cordinate = int((screen_width/2) - (app_width/2))
     y_cordinate = int((screen_height/2) - (app_height/2))
-    root.geometry("{}x{}+{}+{}".format(app_width, app_height, x_cordinate, y_cordinate))
+    root.geometry("{}x{}+{}+{}".format(app_width,
+                  app_height, x_cordinate, y_cordinate))
 
-centerwindow() #center the gui window on the screen
+
+centerwindow()  # center the gui window on the screen
 
 
 def showinfo():
-    tkinter.messagebox.showinfo("About", "App to generate graphviz graphs from HDA-Intel codec information.\n\nCodec Graph version %s\n " % (Version))
+    tkinter.messagebox.showinfo(
+        "About", "App to generate graphviz graphs from HDA-Intel codec information.\n\nCodec Graph version %s\n " % (Version))
+
 
 def DebugWrite(message):
     if debug == True:
         print(f"DEBUG: {message}")
 
-def ChangeDebug():  
+
+def ChangeDebug():
     global debug
     if debug == False:
         debug = True
-        print("Enabled debug mode")  
+        print("Enabled debug mode")
         DebugButton['text'] = 'Disable debug mode'
     elif debug == True:
         debug = False
         DebugButton['text'] = 'Enable debug mode'
 
+
 def CheckGraphviz():
     checkGraphviz = subprocess.run(
         ['dot', '-V'], stdout=subprocess.DEVNULL)
     if checkGraphviz.returncode == 1:
-        errormessage = tkinter.messagebox.showerror("ERROR", "Couldn't find Graphviz Please follow the instructions to install Graphviz.\n\nClick OK to open instructions how to install GraphViz.")
+        errormessage = tkinter.messagebox.showerror(
+            "ERROR", "Couldn't find Graphviz Please follow the instructions to install Graphviz.\n\nClick OK to open instructions how to install GraphViz.")
         print(errormessage)
         if errormessage == "ok":
-            webbrowser.open("https://github.com/Core-i99/Codec-Graph/blob/main/Graphviz%20Instructions.md")
+            webbrowser.open(
+                "https://github.com/Core-i99/Codec-Graph/blob/main/Graphviz%20Instructions.md")
             DebugWrite("Opened instructions")
 
     elif checkGraphviz.returncode == 0:
-        tkinter.messagebox.showinfo("Found graphviz", "Found graphviz installation")
+        tkinter.messagebox.showinfo(
+            "Found graphviz", "Found graphviz installation")
+
 
 def openFileClicked():
     filetypes = [
         ('txt files', '*.txt')
     ]
     inputfile = filedialog.askopenfilename(filetypes=filetypes)
-    if inputfile != '': # if inputfile isn't an empty string (some file is selected)
+    # if inputfile isn't an empty string (some file is selected)
+    if inputfile != '':
         DebugWrite(f"Selected Codec Dump {inputfile}")
+
         def main(argv):
             f = open(inputfile, "r")
             ci = CodecInfo(f)
@@ -108,20 +121,24 @@ def openFileClicked():
 
         # running graphviz
         # usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
-        rungraphviz = os.system("dot -Tsvg -o./output/" + outputfilename +  " ./tmp/dotfile.txt")
-        
+        rungraphviz = os.system(
+            "dot -Tsvg -o./output/" + outputfilename + " ./tmp/dotfile.txt")
+
         if rungraphviz == 0:
             DebugWrite("Running Graphviz succeed")
 
         if rungraphviz == 1:
-            tkinter.messagebox.showerror("Error", "Running graphviz failed!\nPlease check if graphviz is installed using the button for it.")
+            tkinter.messagebox.showerror(
+                "Error", "Running graphviz failed!\nPlease check if graphviz is installed using the button for it.")
 
-        removetmp() 
+        removetmp()
         CreateDecDump()
 
-    else: DebugWrite("Nothing Selected")        
+    else:
+        DebugWrite("Nothing Selected")
 
-def end(): #end of script
+
+def end():  # end of script
     os.system('clear')
     print("The output file has been placed in the output directory \n")
     print("Thanks for using Codec Graph\n")
@@ -136,13 +153,16 @@ def end(): #end of script
     elif hour >= 17 and hour < 21:
         print("Have a nice evening!\n\n")
     else:
-        print("Have a nice night! (And don't forget to sleep!)\n\n")   
-    sys.exit()    
+        print("Have a nice night! (And don't forget to sleep!)\n\n")
+    sys.exit()
+
 
 # Buttons and labels
 tkinter.Button(fm1, text='Select Codec Dump', command=openFileClicked).pack()
-tkinter.Button(fm2, text="Check if Graphviz is installed", command = CheckGraphviz).pack()
-DebugButton = tkinter.Button(fm3, text='Enable debug mode', command=ChangeDebug)
+tkinter.Button(fm2, text="Check if Graphviz is installed",
+               command=CheckGraphviz).pack()
+DebugButton = tkinter.Button(
+    fm3, text='Enable debug mode', command=ChangeDebug)
 DebugButton.pack()
 tkinter.Button(fm4, text="About", command=showinfo).pack()
 tkinter.Button(fm5, text='Exit', command=end).pack()
@@ -161,7 +181,8 @@ dotfile = working_dir + "/tmp/dotfile.txt"
 DebugWrite(f"Current working directory: {working_dir}")
 DebugWrite(f"Dotfile path {dotfile}")
 
-def createtmp(): #create tmp folder
+
+def createtmp():  # create tmp folder
     createtmp = './tmp'
     if os.path.exists(createtmp):
         shutil.rmtree(createtmp)
@@ -181,7 +202,7 @@ def removetmp():  # removing the temp folder
 def createoutputdir():  # Create output folder
     createoutput = 'output'
     if os.path.exists(createoutput):
-        shutil.rmtree(createoutput) # Remove existing ouput folder
+        shutil.rmtree(createoutput)  # Remove existing ouput folder
         DebugWrite("Found an existing output directory")
     os.makedirs(createoutput)
     DebugWrite("Created output directory")
@@ -211,11 +232,13 @@ def indentlevel(line):
         return 0
     return len(m.group(0))
 
+
 def parse_item(level, lines):
     """Read a line and corresponding indented lines"""
     item = lines.pop(0).rstrip('\r\n').lstrip(' ')
     subitems = list(parse_items(level, lines))
-    return item,subitems
+    return item, subitems
+
 
 def parse_items(level, lines):
     """Parse a list of indented lines"""
@@ -227,12 +250,15 @@ def parse_items(level, lines):
             break
         yield parse_item(linelvl, lines)
 
+
 def coloravg(a, b, v):
-    r = tuple([int(a[i]*(1-v) + b[i]*v) for i in (0,1,2)])
+    r = tuple([int(a[i]*(1-v) + b[i]*v) for i in (0, 1, 2)])
     return r
+
 
 def formatcolor(c):
     return '#%02x%02x%02x' % c
+
 
 class Amplifier:
     def __init__(self, ofs, nsteps, stepsize, mute):
@@ -244,7 +270,7 @@ class Amplifier:
     def set_values(self, values):
         self.values = values
         self.gainvalues = [v & 0x7f for v in values]
-        self.mutevalues = [(v & 0x80)!= 0 for v in values]
+        self.mutevalues = [(v & 0x80) != 0 for v in values]
 
     def color(self):
         if True in self.mutevalues:
@@ -255,11 +281,13 @@ class Amplifier:
             if self.nsteps == 0:
                 level = 1
             else:
-                #XXX: confirm if this formula is correct
+                # XXX: confirm if this formula is correct
                 level = 1-float(average-self.ofs)/(self.nsteps)
 
-        if level < 0: level = 0
-        if level > 1: level = 1
+        if level < 0:
+            level = 0
+        if level > 1:
+            level = 1
 
         zerocolor = (200, 200, 200)
         fullcolor = (0, 0, 255)
@@ -267,8 +295,10 @@ class Amplifier:
 
         return formatcolor(color)
 
+
 class Node:
-    node_info_re = re.compile('^Node (0x[0-9a-f]*) \[(.*?)\] wcaps 0x[0-9a-f]*?: (.*)$')
+    node_info_re = re.compile(
+        '^Node (0x[0-9a-f]*) \[(.*?)\] wcaps 0x[0-9a-f]*?: (.*)$')
     final_hex_re = re.compile(' *(0x[0-9a-f]*)$')
 
     def __init__(self, codec, item, subitems):
@@ -288,10 +318,10 @@ class Node:
         self.wcaps = wcapstr.split()
 
         # parse all items on the node information
-        for item,subitems in self.subitems:
+        for item, subitems in self.subitems:
             # Parse node fields
             if ':' in item:
-                f,v = item.split(':', 1)
+                f, v = item.split(':', 1)
                 v = v.lstrip()
 
                 # strip hex number at the end.
@@ -303,10 +333,10 @@ class Node:
 
                     # store the hex value and the
                     # string, on different keys
-                    fields[f+'-hex'] = m.group(1),subitems
-                    fields[f] = v,subitems
+                    fields[f+'-hex'] = m.group(1), subitems
+                    fields[f] = v, subitems
                 else:
-                    fields[f] = v,subitems
+                    fields[f] = v, subitems
             else:
                 sys.stderr.write("Unknown node item: %s\n" % (item))
 
@@ -315,11 +345,11 @@ class Node:
         # parse connection info
         conn = fields.get('Connection', ('0', []))
 
-        number,items = conn
+        number, items = conn
         self.num_inputs = int(number)
         conns = []
         self.active_conn = None
-        for i,sub in items:
+        for i, sub in items:
             for j in i.split():
                 active = j.endswith('*')
                 j = j.rstrip('*')
@@ -344,7 +374,7 @@ class Node:
 
             caps = {}
             for cap in capl:
-                cname,cval = cap.split('=', 1)
+                cname, cval = cap.split('=', 1)
                 caps[cname] = cval
 
             valstr = fields['%s vals' % (name)][0]
@@ -352,16 +382,19 @@ class Node:
 
             # warn if Amp-In vals field is broken
             if count != len(vals):
-                sys.stderr.write("Node 0x%02x: Amp-In vals count is wrong: values found: %d. expected: %d\n" % (self.nid, len(vals), count))
+                sys.stderr.write(
+                    "Node 0x%02x: Amp-In vals count is wrong: values found: %d. expected: %d\n" % (self.nid, len(vals), count))
 
             amps = []
             for i in range(count):
                 amp = Amplifier(caps['ofs'], caps['nsteps'],
-                                    caps['stepsize'], caps['mute'])
-                if len(vals) > i: intvals = [int(v, 16) for v in vals[i].split(' ')]
+                                caps['stepsize'], caps['mute'])
+                if len(vals) > i:
+                    intvals = [int(v, 16) for v in vals[i].split(' ')]
                 # just in case the "vals" field is
                 # broken in our input file
-                else: intvals = [0, 0]
+                else:
+                    intvals = [0, 0]
                 amp.set_values(intvals)
                 amps.append(amp)
 
@@ -385,7 +418,7 @@ class Node:
     def is_divided(self):
         if self.type == 'Pin Complex':
             return True
-        
+
         return False
 
     def idstring(self):
@@ -414,9 +447,12 @@ class Node:
         return self.type in types
 
     def num_inamps(self):
-        if not self.has_inamp(): return 0
-        elif self.many_ampins(): return self.num_inputs
-        else: return 1
+        if not self.has_inamp():
+            return 0
+        elif self.many_ampins():
+            return self.num_inputs
+        else:
+            return 1
 
     def inamp_id(self, orignid):
         if self.many_ampins():
@@ -468,14 +504,14 @@ class Node:
         #print(('// %r') % (self.fields))
         pdef = self.fields.get('Pin Default')
         if pdef:
-            pdef,subdirs = pdef
+            pdef, subdirs = pdef
             r += '\\n%s' % (pdef)
 
         r += '\\n%s' % (self.wcaps_label())
 
         pincap = self.fields.get('Pincap')
         if pincap:
-            pincap,subdirs = pincap
+            pincap, subdirs = pincap
             r += '\\n%s' % (pincap)
 
         r = '"%s"' % (r)
@@ -488,26 +524,26 @@ class Node:
         return ALL_NODES or len(self.outputs) > 0
 
     def additional_attrs(self):
-        default_attrs = [ ('shape', 'box'), ('color', 'black') ]
+        default_attrs = [('shape', 'box'), ('color', 'black')]
         shape_dict = {
-            'Audio Input':[ ('color', 'red'),
-                            ('shape', 'ellipse') ],
-            'Audio Output':[ ('color', 'blue'),
-                             ('shape', 'ellipse') ],
-            'Pin Complex':[ ('color', 'green'),
-                            ('shape', 'box') ],
-            'Audio Selector':[ ('shape', 'parallelogram'),
-                               ('orientation', '0')  ],
-            'Audio Mixer':[ ('shape', 'hexagon') ],
-            'Unknown Node':[ ('color', 'red'),
-                             ('shape', 'Mdiamond') ],
+            'Audio Input': [('color', 'red'),
+                            ('shape', 'ellipse')],
+            'Audio Output': [('color', 'blue'),
+                             ('shape', 'ellipse')],
+            'Pin Complex': [('color', 'green'),
+                            ('shape', 'box')],
+            'Audio Selector': [('shape', 'parallelogram'),
+                               ('orientation', '0')],
+            'Audio Mixer': [('shape', 'hexagon')],
+            'Unknown Node': [('color', 'red'),
+                             ('shape', 'Mdiamond')],
         }
         return shape_dict.get(self.type, default_attrs)
 
     def new_node(self, f, id, attrs):
         f.write(' %s ' % (id))
         if attrs:
-            attrstr = ', '.join('%s=%s' % (f,v) for f,v in attrs)
+            attrstr = ', '.join('%s=%s' % (f, v) for f, v in attrs)
             f.write('[%s]' % (attrstr))
         f.write('\n')
 
@@ -520,7 +556,7 @@ class Node:
             self.new_node(f, self.main_output_id(), self.get_attrs())
 
     def get_attrs(self):
-        attrs = [ ('label', self.label()) ]
+        attrs = [('label', self.label())]
         attrs.extend(self.additional_attrs())
         return attrs
 
@@ -533,28 +569,35 @@ class Node:
             self.dump_main_output()
 
     def show_amp(self, f, id, type, frm, to, label='', color=None):
-        if color is None: fill = ''
-        else: fill=' color="%s"' % (color)
+        if color is None:
+            fill = ''
+        else:
+            fill = ' color="%s"' % (color)
 
-        f.write('  %s [label = "%s", shape=triangle orientation=-90%s];\n' % (id, label, fill))
-        f.write('  %s -> %s [arrowsize=0.5, arrowtail=dot, weight=2.0%s];\n' % (frm, to, fill))
+        f.write(
+            '  %s [label = "%s", shape=triangle orientation=-90%s];\n' % (id, label, fill))
+        f.write(
+            '  %s -> %s [arrowsize=0.5, arrowtail=dot, weight=2.0%s];\n' % (frm, to, fill))
 
     def dump_out_amps(self, f):
         if self.show_output() and self.has_outamp():
-            self.show_amp(f, self.outamp_id(), "Out", self.outamp_next_id(), self.outamp_id(), '', self.outamp.color())
+            self.show_amp(f, self.outamp_id(), "Out", self.outamp_next_id(
+            ), self.outamp_id(), '', self.outamp.color())
 
     def dump_in_amps(self, f):
         if self.show_input() and self.has_inamp():
 
             if self.many_ampins():
-                amporigins = [("%d (0x%02x)" % (n, self.inputs[n]), self.inputs[n]) for n in range(len(self.inputs))]
+                amporigins = [("%d (0x%02x)" % (n, self.inputs[n]),
+                               self.inputs[n]) for n in range(len(self.inputs))]
             else:
-                amporigins = [ ('', None) ]
+                amporigins = [('', None)]
 
             for i in range(len(amporigins)):
-                label,origin = amporigins[i]
+                label, origin = amporigins[i]
                 ampid = self.inamp_id(origin)
-                self.show_amp(f, ampid, "In", ampid, self.inamp_next_id(), label, self.inamps[i].color())
+                self.show_amp(f, ampid, "In", ampid,
+                              self.inamp_next_id(), label, self.inamps[i].color())
 
     def dump_amps(self, f):
         self.dump_out_amps(f)
@@ -581,7 +624,7 @@ class Node:
             self.dump_main_output(f)
             self.dump_in_amps(f)
             f.write('}\n')
-        else: 
+        else:
             f.write('subgraph "%s" {\n' % (name))
             f.write('  pencolor="gray80"\n')
             self.dump_main(f)
@@ -590,14 +633,16 @@ class Node:
 
         for origin in self.input_nodes():
             if self.is_conn_active(origin.nid):
-                attrs="[color=gray20]"
+                attrs = "[color=gray20]"
             else:
-                attrs="[color=gray style=dashed]"
-            f.write('%s -> %s %s;\n' % (origin.out_id(), self.in_id(origin.nid), attrs))
-        
+                attrs = "[color=gray style=dashed]"
+            f.write('%s -> %s %s;\n' %
+                    (origin.out_id(), self.in_id(origin.nid), attrs))
+
 
 re_indent = re.compile("^ *")
- 
+
+
 class CodecInfo:
     def __init__(self, f):
         self.fields = {}
@@ -605,10 +650,10 @@ class CodecInfo:
         lines = f.readlines()
         total_lines = len(lines)
 
-        for item,subitems in parse_items(-1, lines):
+        for item, subitems in parse_items(-1, lines):
             line = total_lines-len(lines)
             try:
-                if ': '  not in item and item.endswith(':'):
+                if ': ' not in item and item.endswith(':'):
                     # special case where there is no ": "
                     # but we want to treat it like a "key: value"
                     # line
@@ -622,12 +667,13 @@ class CodecInfo:
                     # ignore those lines
                     pass
                 elif ': ' in item:
-                    f,v = item.split(': ', 1)
+                    f, v = item.split(': ', 1)
                     self.fields[f] = v
                 elif item.strip() == '':
                     continue
                 else:
-                    sys.stderr.write("Warning: line %d ignored: %s\n" % (line, item))
+                    sys.stderr.write(
+                        "Warning: line %d ignored: %s\n" % (line, item))
             except Exception:
                 sys.stderr.write('Exception around line %d\n' % (line))
                 sys.stderr.write('item: %r\n' % (item))
@@ -640,7 +686,8 @@ class CodecInfo:
         n = self.nodes.get(nid)
         if not n:
             # create a fake node
-            n = Node(self, 'Node 0x%02x [Unknown Node] wcaps 0x0000: ' % (nid), [])
+            n = Node(
+                self, 'Node 0x%02x [Unknown Node] wcaps 0x0000: ' % (nid), [])
             self.nodes[nid] = n
             n.label = lambda: ('"Unknown Node 0x%02x"' % (nid))
         return n
@@ -659,7 +706,7 @@ class CodecInfo:
 
     def dump_graph(self):
         createtmp()
-        with open(dotfile, "w", encoding = 'utf-8') as file:
+        with open(dotfile, "w", encoding='utf-8') as file:
             file.write('digraph {\n')
             file.write("""rankdir=LR
             ranksep=3.0
