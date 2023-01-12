@@ -252,7 +252,7 @@ def coloravg(a, b, v):
 
 
 def formatcolor(c):
-    return '#%02x%02x%02x' % c
+    return f"#{c[0]:02x}{c[1]:02x}{c[2]:02x}"
 
 
 class Amplifier:
@@ -445,8 +445,7 @@ class Node:
             return 0
         if self.many_ampins():
             return self.num_inputs
-        else:
-            return 1
+        return 1
 
     def inamp_id(self, orignid):
         if self.many_ampins():
@@ -537,7 +536,7 @@ class Node:
     def new_node(self, f, id, attrs):
         f.write(f' {id} ')
         if attrs:
-            attrstr = ', '.join('%s=%s' % (f, v) for f, v in attrs)
+            attrstr = ', '.join(f'{f}={v}' for f, v in attrs)
             f.write(f'[{attrstr}]')
         f.write('\n')
 
@@ -586,8 +585,8 @@ class Node:
             else:
                 amporigins = [('', None)]
 
-            for i in range(len(amporigins)):
-                label, origin = amporigins[i]
+            for i, amporigin in enumerate(amporigins):
+                label, origin = amporigin
                 ampid = self.inamp_id(origin)
                 self.show_amp(f, ampid, "In", ampid,
                               self.inamp_next_id(), label, self.inamps[i].color())
@@ -604,7 +603,7 @@ class Node:
         return False
 
     def dump_graph(self, f):
-        name = "cluster-%s" % (self.idstring())
+        name = f"cluster-{self.idstring()}"
         if self.is_divided():
             f.write('subgraph "%s-in" {\n' % (name))
             f.write('  pencolor="gray80"\n')
@@ -629,10 +628,7 @@ class Node:
                 attrs = "[color=gray20]"
             else:
                 attrs = "[color=gray style=dashed]"
-            f.write('%s -> %s %s;\n' %
-                    (origin.out_id(), self.in_id(origin.nid), attrs))
-
-
+            f.write(f'{origin.out_id()} -> {self.in_id(origin.nid)} {attrs};\n')
 re_indent = re.compile("^ *")
 
 
@@ -667,10 +663,11 @@ class CodecInfo:
                 else:
                     sys.stderr.write(
                         "Warning: line %d ignored: %s\n" % (line, item))
+
             except Exception:
                 sys.stderr.write('Exception around line %d\n' % (line))
-                sys.stderr.write('item: %r\n' % (item))
-                sys.stderr.write('subitems: %r\n' % (subitems))
+                sys.stderr.write(f'item: {item}\n')
+                sys.stderr.write(f'subitems: {subitems}\n)')
                 raise
 
         self.create_out_lists()
@@ -680,9 +677,9 @@ class CodecInfo:
         if not n:
             # create a fake node
             n = Node(
-                self, 'Node 0x%02x [Unknown Node] wcaps 0x0000: ' % (nid), [])
+                self, f'Node 0x{nid:02x} [Unknown Node] wcaps 0x0000: ', [])
             self.nodes[nid] = n
-            n.label = lambda: ('"Unknown Node 0x%02x"' % (nid))
+            n.label = lambda: (f'"Unknown Node 0x{nid:02x}"')
         return n
 
     def create_out_lists(self):
@@ -691,11 +688,11 @@ class CodecInfo:
                 i.new_output(n.nid)
 
     def dump(self):
-        print(("Codec: %s") % (self.fields['Codec']))
-        print(("Nodes: %d") % (len(self.nodes)))
+        print(f"Codec: {self.fields['Codec']}")
+        print(f"Nodes: {len(self.nodes)}")
         for n in list(self.nodes.values()):
-            print(("Node: 0x%02x") % (n.nid), end=' ')
-            print((" %d conns") % (n.num_inputs))
+            print(f"Node: 0x{n.nid:02x}", end=' ')
+            print(f" {n.num_inputs} conns")
 
     def dump_graph(self):
         createtmp()
