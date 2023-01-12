@@ -107,7 +107,7 @@ def showinfo():
 
 def CheckGraphviz():
     checkGraphviz = subprocess.run(
-        ['dot', '-V'], stdout=subprocess.DEVNULL, check=True)
+        ['dot', '-V'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, check=False, shell=True)
     if checkGraphviz.returncode == 1:
         errormessage = tkinter.messagebox.showerror(
             "ERROR", "Couldn't find Graphviz Please follow the instructions to install Graphviz.\n\nClick OK to open instructions how to install GraphViz.")
