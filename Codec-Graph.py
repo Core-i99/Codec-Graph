@@ -498,8 +498,8 @@ class Node:
         return ' '.join(show)
 
     def label(self):
-        r = '0x%02x' % (self.nid)
-        #print(('// %r') % (self.fields))
+        r = f'{self.nid} (0x{self.nid:02x})'
+
         pdef = self.fields.get('Pin Default')
         if pdef:
             pdef, subdirs = pdef
