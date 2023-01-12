@@ -28,6 +28,7 @@ import os
 import platform
 import webbrowser
 import shutil
+import datetime
 import subprocess
 import logging
 from logging import handlers
@@ -94,7 +95,8 @@ def centerwindow():
     screen_height = root.winfo_screenheight()
     x_cordinate = int((screen_width/2) - (app_width/2))
     y_cordinate = int((screen_height/2) - (app_height/2))
-    root.geometry(f"{app_width}x{app_height}+{x_cordinate}+{y_cordinate}")
+    root.geometry("{}x{}+{}+{}".format(app_width,
+                  app_height, x_cordinate, y_cordinate))
 
 
 centerwindow()  # center the gui window on the screen
@@ -102,12 +104,12 @@ centerwindow()  # center the gui window on the screen
 
 def showinfo():
     tkinter.messagebox.showinfo(
-        "About", f"App to generate graphviz graphs from HDA-Intel codec information.\n\nCodec Graph version {Version}\n ")
+        "About", "App to generate graphviz graphs from HDA-Intel codec information.\n\nCodec Graph version %s\n " % (Version))
 
 
 def CheckGraphviz():
     checkGraphviz = subprocess.run(
-        ['dot', '-V'], stdout=subprocess.DEVNULL, check=True)
+        ['dot', '-V'], stdout=subprocess.DEVNULL)
     if checkGraphviz.returncode == 1:
         errormessage = tkinter.messagebox.showerror(
             "ERROR", "Couldn't find Graphviz Please follow the instructions to install Graphviz.\n\nClick OK to open instructions how to install GraphViz.")
@@ -129,10 +131,15 @@ def openFileClicked():
     inputfile = filedialog.askopenfilename(filetypes=filetypes)
     # if inputfile isn't an empty string (some file is selected)
     if inputfile != '':
-        logging.info(f"Selected Codec Dump %s", inputfile)
-        with open(inputfile, "r") as f:
+        logging.info(f"Selected Codec Dump {inputfile}")
+
+        def main(argv):
+            f = open(inputfile, "r")
             ci = CodecInfo(f)
             ci.dump_graph()
+        if __name__ == '__main__':
+            main(sys.argv)
+
         # running graphviz
         # usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
         rungraphviz = os.system(
@@ -172,8 +179,8 @@ fm4.pack(pady=10)
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 working_dir = os.getcwd()
 dotfile = working_dir + "/tmp/dotfile.txt"
-logging.info(f"Current working directory: %s", working_dir)
-logging.info(f"Dotfile path %s", dotfile)
+logging.info(f"Current working directory: {working_dir}")
+logging.info(f"Dotfile path {dotfile}")
 
 
 def createtmp():  # create tmp folder
@@ -186,7 +193,7 @@ def createtmp():  # create tmp folder
 
 
 def removetmp():  # removing the temp folder
-    shutil.rmtree('./tmp/')
+    removetmp = shutil.rmtree('./tmp/')
     if os.path.exists("./tmp"):
         logging.error("Removing tmp directory failed")
     else:
@@ -204,7 +211,7 @@ def createoutputdir():  # Create output folder
 
 def CreateDecDump():  # create decimal dump
     logging.info("Creating decimal dump")
-    with open("./output/" + outputfilename, "r", encoding="utf-8") as f:
+    with open("./output/" + outputfilename, "r") as f:
         data = f.readlines()
         for index, line in enumerate(data):
             hex_values = re.findall(r'0x[\dA-F]+', line)
@@ -212,7 +219,7 @@ def CreateDecDump():  # create decimal dump
                 dec_value = str(int(hex_value, 16))
                 line = line.replace(hex_value, dec_value)
             data[index] = line
-    with open("./output/" + outputname + "dec.svg", "w", encoding="utf-8") as f:
+    with open("./output/" + outputname + "dec.svg", "w") as f:
         f.writelines(data)
         logging.info("Created decimal svg")
     tkinter.messagebox.showinfo(
@@ -450,7 +457,7 @@ class Node:
 
     def inamp_id(self, orignid):
         if self.many_ampins():
-            return f'"{self.idstring()}-ampin-{orignid}"'
+            return '"%s-ampin-%s"' % (self.idstring(), orignid)
         return '"%s-ampin"' % (self.idstring())
 
     def in_id(self, orignid):
@@ -464,15 +471,15 @@ class Node:
 
     def main_id(self):
         assert not self.is_divided()
-        return f'"{self.idstring()}"'
+        return '"%s"' % (self.idstring())
 
     def main_input_id(self):
         assert self.is_divided()
-        return f'"{self.idstring()}-in"'
+        return '"%s-in"' % (self.idstring())
 
     def main_output_id(self):
         assert self.is_divided()
-        return f'"{self.idstring()}-out"'
+        return '"%s-out"' % (self.idstring())
 
     def inamp_next_id(self):
         """ID of the node where the In-Amp would be connected"""
@@ -499,16 +506,16 @@ class Node:
         pdef = self.fields.get('Pin Default')
         if pdef:
             pdef, subdirs = pdef
-            r += f'\\n{pdef}'
+            r += '\\n%s' % (pdef)
 
-        r += f'\\n{self.wcaps_label()}'
+        r += '\\n%s' % (self.wcaps_label())
 
         pincap = self.fields.get('Pincap')
         if pincap:
             pincap, subdirs = pincap
-            r += f'\\n{pincap}'
+            r += '\\n%s' % (pincap)
 
-        r = f'"{r}"'
+        r = '"%s"' % (r)
         return r
 
     def show_input(self):
@@ -535,7 +542,7 @@ class Node:
         return shape_dict.get(self.type, default_attrs)
 
     def new_node(self, f, id, attrs):
-        f.write(f'{id}')
+        f.write(' %s ' % (id))
         if attrs:
             attrstr = ', '.join('%s=%s' % (f, v) for f, v in attrs)
             f.write('[%s]' % (attrstr))
