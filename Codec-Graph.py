@@ -25,20 +25,58 @@
 import re
 import sys
 import os
+import platform
 import webbrowser
 import shutil
 import datetime
 import subprocess
+import logging
+from logging import handlers
 import tkinter
 import tkinter.messagebox
 from tkinter import filedialog
 
 Version = "V1.4"
 ALL_NODES = False
-
-debug = False
 outputname = "codecdump"
 outputfilename = outputname + ".svg"
+
+# logging
+if platform.system() == "Darwin":
+    lib_logs = os.path.join(
+        os.path.expanduser("~"),
+        "Library",
+        "Logs"
+    )
+
+elif platform.system() == "Windows":
+    appdata_local = os.getenv("LOCALAPPDATA")
+    lib_logs = os.path.join(appdata_local, 'Codec-Graph')
+    if not os.path.exists(lib_logs):
+        try:
+            os.mkdir(lib_logs)
+        except Exception:
+            print("Failed to create log dir")
+            sys.exit()
+
+else:
+    print("This OS is currently not supported")
+    sys.exit()
+logformat = "%(asctime)s - %(levelname)s - %(message)s"
+date = "%m/%d/%Y %I:%M:%S %p"
+
+# Adding the base log handlers.
+handler = logging.getLogger()
+rotating = handlers.RotatingFileHandler(os.path.join(
+    lib_logs, "Codec-Graph.log"), mode="a", maxBytes=2 ** 13)
+# Add the RotatingFileHandler to the default logger.
+handler.addHandler(rotating)
+rotating.setFormatter(
+    logging.Formatter(
+        logformat, datefmt=date
+    )
+)
+handler.setLevel(logging.DEBUG)
 
 root = tkinter.Tk()  # Creating instance of tkinter class
 root.title("Codec Graph")
@@ -48,11 +86,10 @@ fm1 = tkinter.Frame(root)
 fm2 = tkinter.Frame(root)
 fm3 = tkinter.Frame(root)
 fm4 = tkinter.Frame(root)
-fm5 = tkinter.Frame(root)
 
 
 def centerwindow():
-    app_height = 250
+    app_height = 200
     app_width = 500
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
@@ -70,22 +107,6 @@ def showinfo():
         "About", "App to generate graphviz graphs from HDA-Intel codec information.\n\nCodec Graph version %s\n " % (Version))
 
 
-def DebugWrite(message):
-    if debug == True:
-        print(f"DEBUG: {message}")
-
-
-def ChangeDebug():
-    global debug
-    if debug == False:
-        debug = True
-        print("Enabled debug mode")
-        DebugButton['text'] = 'Disable debug mode'
-    elif debug == True:
-        debug = False
-        DebugButton['text'] = 'Enable debug mode'
-
-
 def CheckGraphviz():
     checkGraphviz = subprocess.run(
         ['dot', '-V'], stdout=subprocess.DEVNULL)
@@ -96,7 +117,7 @@ def CheckGraphviz():
         if errormessage == "ok":
             webbrowser.open(
                 "https://github.com/Core-i99/Codec-Graph/blob/main/Graphviz%20Instructions.md")
-            DebugWrite("Opened instructions")
+            logging.info("Opened instructions")
 
     elif checkGraphviz.returncode == 0:
         tkinter.messagebox.showinfo(
@@ -110,7 +131,7 @@ def openFileClicked():
     inputfile = filedialog.askopenfilename(filetypes=filetypes)
     # if inputfile isn't an empty string (some file is selected)
     if inputfile != '':
-        DebugWrite(f"Selected Codec Dump {inputfile}")
+        logging.info(f"Selected Codec Dump {inputfile}")
 
         def main(argv):
             f = open(inputfile, "r")
@@ -125,7 +146,7 @@ def openFileClicked():
             "dot -Tsvg -o./output/" + outputfilename + " ./tmp/dotfile.txt")
 
         if rungraphviz == 0:
-            DebugWrite("Running Graphviz succeed")
+            logging.info("Running Graphviz succeed")
 
         if rungraphviz == 1:
             tkinter.messagebox.showerror(
@@ -134,26 +155,10 @@ def openFileClicked():
         removetmp()
         CreateDecDump()
 
-    else:
-        DebugWrite("Nothing Selected")
 
-
-def end():  # end of script
-    os.system('clear')
-    print("The output file has been placed in the output directory \n")
-    print("Thanks for using Codec Graph\n")
-    print("Written By Core i99 - © Stijn Rombouts 2021\n")
-    print("Check out my GitHub:\n")
-    print("https://github.com/Core-i99/\n\n")
-    hour = datetime.datetime.now().time().hour
-    if hour > 3 and hour < 12:
-        print("Have a nice morning!\n\n")
-    elif hour >= 12 and hour < 17:
-        print("Have a nice afternoon!\n\n")
-    elif hour >= 17 and hour < 21:
-        print("Have a nice evening!\n\n")
-    else:
-        print("Have a nice night! (And don't forget to sleep!)\n\n")
+def end():
+    end_string = "Thanks for using Codec Graph\nWritten By Core i99 - © Stijn Rombouts 2022\n"
+    tkinter.messagebox.showinfo("End", end_string)
     sys.exit()
 
 
@@ -161,55 +166,51 @@ def end():  # end of script
 tkinter.Button(fm1, text='Select Codec Dump', command=openFileClicked).pack()
 tkinter.Button(fm2, text="Check if Graphviz is installed",
                command=CheckGraphviz).pack()
-DebugButton = tkinter.Button(
-    fm3, text='Enable debug mode', command=ChangeDebug)
-DebugButton.pack()
-tkinter.Button(fm4, text="About", command=showinfo).pack()
-tkinter.Button(fm5, text='Exit', command=end).pack()
+tkinter.Button(fm3, text="About", command=showinfo).pack()
+tkinter.Button(fm4, text='Exit', command=end).pack()
 
 # pack the frames
 fm1.pack(pady=10)
 fm2.pack(pady=10)
 fm3.pack(pady=10)
 fm4.pack(pady=10)
-fm5.pack(pady=10)
 
 # working directory
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 working_dir = os.getcwd()
 dotfile = working_dir + "/tmp/dotfile.txt"
-DebugWrite(f"Current working directory: {working_dir}")
-DebugWrite(f"Dotfile path {dotfile}")
+logging.info(f"Current working directory: {working_dir}")
+logging.info(f"Dotfile path {dotfile}")
 
 
 def createtmp():  # create tmp folder
     createtmp = './tmp'
     if os.path.exists(createtmp):
         shutil.rmtree(createtmp)
-        DebugWrite("Found an existing tmp directory")
+        logging.info("Found an existing tmp directory")
     os.makedirs(createtmp)
-    DebugWrite("Created tmp directory")
+    logging.info("Created tmp directory")
 
 
 def removetmp():  # removing the temp folder
     removetmp = shutil.rmtree('./tmp/')
     if os.path.exists("./tmp"):
-        DebugWrite("Removing tmp directory failed")
+        logging.error("Removing tmp directory failed")
     else:
-        DebugWrite("Removing tmp directory succeed")
+        logging.info("Removing tmp directory succeed")
 
 
 def createoutputdir():  # Create output folder
     createoutput = 'output'
     if os.path.exists(createoutput):
         shutil.rmtree(createoutput)  # Remove existing ouput folder
-        DebugWrite("Found an existing output directory")
+        logging.info("Found an existing output directory")
     os.makedirs(createoutput)
-    DebugWrite("Created output directory")
+    logging.info("Created output directory")
 
 
 def CreateDecDump():  # create decimal dump
-    DebugWrite("Creating decimal dump")
+    logging.info("Creating decimal dump")
     with open("./output/" + outputfilename, "r") as f:
         data = f.readlines()
         for index, line in enumerate(data):
@@ -220,7 +221,7 @@ def CreateDecDump():  # create decimal dump
             data[index] = line
     with open("./output/" + outputname + "dec.svg", "w") as f:
         f.writelines(data)
-        DebugWrite("Created decimal svg")
+        logging.info("Created decimal svg")
     tkinter.messagebox.showinfo(
         "Finished", "Done! Look in the output folder.")
 
@@ -714,7 +715,7 @@ class CodecInfo:
             for n in list(self.nodes.values()):
                 n.dump_graph(file)
             file.write('}\n')
-            DebugWrite("Wrote dotfile")
+            logging.info("Wrote dotfile")
         createoutputdir()
 
 
