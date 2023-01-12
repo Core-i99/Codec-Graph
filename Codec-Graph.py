@@ -133,12 +133,9 @@ def openFileClicked():
     if inputfile != '':
         logging.info(f"Selected Codec Dump {inputfile}")
 
-        def main(argv):
-            f = open(inputfile, "r")
+        with open(inputfile, "r") as f:
             ci = CodecInfo(f)
             ci.dump_graph()
-        if __name__ == '__main__':
-            main(sys.argv)
 
         # running graphviz
         # usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
