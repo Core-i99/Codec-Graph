@@ -605,19 +605,19 @@ class Node:
     def dump_graph(self, f):
         name = f"cluster-{self.idstring()}"
         if self.is_divided():
-            f.write('subgraph "%s-in" {\n' % (name))
+            f.write(f'subgraph "{name}-in" ' + '{\n')
             f.write('  pencolor="gray80"\n')
             self.dump_main_input(f)
             self.dump_out_amps(f)
             f.write('}\n')
 
-            f.write('subgraph "%s-out" {\n' % (name))
+            f.write(f'subgraph "{name}-out" ' + '{\n')
             f.write('  pencolor="gray80"\n')
             self.dump_main_output(f)
             self.dump_in_amps(f)
             f.write('}\n')
         else:
-            f.write('subgraph "%s" {\n' % (name))
+            f.write(f'subgraph "{name}" ' + '{\n')
             f.write('  pencolor="gray80"\n')
             self.dump_main(f)
             self.dump_amps(f)
@@ -629,6 +629,8 @@ class Node:
             else:
                 attrs = "[color=gray style=dashed]"
             f.write(f'{origin.out_id()} -> {self.in_id(origin.nid)} {attrs};\n')
+
+
 re_indent = re.compile("^ *")
 
 
@@ -662,10 +664,10 @@ class CodecInfo:
                     continue
                 else:
                     sys.stderr.write(
-                        "Warning: line %d ignored: %s\n" % (line, item))
+                        f"Warning: line {line} ignored: {item}\n")
 
             except Exception:
-                sys.stderr.write('Exception around line %d\n' % (line))
+                sys.stderr.write(f'Exception around line {line}\n')
                 sys.stderr.write(f'item: {item}\n')
                 sys.stderr.write(f'subitems: {subitems}\n)')
                 raise
