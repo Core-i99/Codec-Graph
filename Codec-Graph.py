@@ -238,8 +238,8 @@ def parse_item(level, lines):
 def parse_items(level, lines):
     """Parse a list of indented lines"""
     while lines:
-        l = lines[0]
-        linelvl = indentlevel(l)
+        line = lines[0]
+        linelvl = indentlevel(line)
         if linelvl <= level:
             # end of list
             break
