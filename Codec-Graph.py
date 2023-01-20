@@ -28,7 +28,6 @@ import os
 import platform
 import webbrowser
 import shutil
-import datetime
 import subprocess
 import logging
 from logging import handlers
@@ -56,11 +55,11 @@ elif platform.system() == "Windows":
         try:
             os.mkdir(lib_logs)
         except Exception:
-            print("Failed to create log dir")
+            tkinter.messagebox.showerror("ERROR", "Failed to create log dir")
             sys.exit()
 
 else:
-    print("This OS is currently not supported")
+    tkinter.messagebox.showerror("ERROR", "This OS is currently not supported")
     sys.exit()
 logformat = "%(asctime)s - %(levelname)s - %(message)s"
 date = "%m/%d/%Y %I:%M:%S %p"
@@ -95,8 +94,7 @@ def centerwindow():
     screen_height = root.winfo_screenheight()
     x_cordinate = int((screen_width/2) - (app_width/2))
     y_cordinate = int((screen_height/2) - (app_height/2))
-    root.geometry("{}x{}+{}+{}".format(app_width,
-                  app_height, x_cordinate, y_cordinate))
+    root.geometry(f"{app_width}x{app_height}+{x_cordinate}+{y_cordinate}")
 
 
 centerwindow()  # center the gui window on the screen
@@ -104,16 +102,15 @@ centerwindow()  # center the gui window on the screen
 
 def showinfo():
     tkinter.messagebox.showinfo(
-        "About", "App to generate graphviz graphs from HDA-Intel codec information.\n\nCodec Graph version %s\n " % (Version))
+        "About", f"App to generate graphviz graphs from HDA-Intel codec information.\n\nCodec Graph version {Version}\n ")
 
 
 def CheckGraphviz():
     checkGraphviz = subprocess.run(
-        ['dot', '-V'], stdout=subprocess.DEVNULL)
+        ['dot', '-V'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, check=False, shell=True)
     if checkGraphviz.returncode == 1:
         errormessage = tkinter.messagebox.showerror(
             "ERROR", "Couldn't find Graphviz Please follow the instructions to install Graphviz.\n\nClick OK to open instructions how to install GraphViz.")
-        print(errormessage)
         if errormessage == "ok":
             webbrowser.open(
                 "https://github.com/Core-i99/Codec-Graph/blob/main/Graphviz%20Instructions.md")
@@ -131,14 +128,11 @@ def openFileClicked():
     inputfile = filedialog.askopenfilename(filetypes=filetypes)
     # if inputfile isn't an empty string (some file is selected)
     if inputfile != '':
-        logging.info(f"Selected Codec Dump {inputfile}")
+        logging.info("Selected Codec Dump %s", inputfile)
 
-        def main(argv):
-            f = open(inputfile, "r")
+        with open(inputfile, "r", encoding="utf-8") as f:
             ci = CodecInfo(f)
             ci.dump_graph()
-        if __name__ == '__main__':
-            main(sys.argv)
 
         # running graphviz
         # usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
@@ -179,8 +173,8 @@ fm4.pack(pady=10)
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 working_dir = os.getcwd()
 dotfile = working_dir + "/tmp/dotfile.txt"
-logging.info(f"Current working directory: {working_dir}")
-logging.info(f"Dotfile path {dotfile}")
+logging.info("Current working directory: %s", working_dir)
+logging.info("Dotfile path %s", dotfile)
 
 
 def createtmp():  # create tmp folder
@@ -193,7 +187,7 @@ def createtmp():  # create tmp folder
 
 
 def removetmp():  # removing the temp folder
-    removetmp = shutil.rmtree('./tmp/')
+    shutil.rmtree('./tmp/')
     if os.path.exists("./tmp"):
         logging.error("Removing tmp directory failed")
     else:
@@ -211,7 +205,7 @@ def createoutputdir():  # Create output folder
 
 def CreateDecDump():  # create decimal dump
     logging.info("Creating decimal dump")
-    with open("./output/" + outputfilename, "r") as f:
+    with open("./output/" + outputfilename, "r", encoding="utf-8") as f:
         data = f.readlines()
         for index, line in enumerate(data):
             hex_values = re.findall(r'0x[\dA-F]+', line)
@@ -219,7 +213,7 @@ def CreateDecDump():  # create decimal dump
                 dec_value = str(int(hex_value, 16))
                 line = line.replace(hex_value, dec_value)
             data[index] = line
-    with open("./output/" + outputname + "dec.svg", "w") as f:
+    with open("./output/" + outputname + "dec.svg", "w", encoding="utf-8") as f:
         f.writelines(data)
         logging.info("Created decimal svg")
     tkinter.messagebox.showinfo(
@@ -244,8 +238,8 @@ def parse_item(level, lines):
 def parse_items(level, lines):
     """Parse a list of indented lines"""
     while lines:
-        l = lines[0]
-        linelvl = indentlevel(l)
+        line = lines[0]
+        linelvl = indentlevel(line)
         if linelvl <= level:
             # end of list
             break
@@ -253,12 +247,12 @@ def parse_items(level, lines):
 
 
 def coloravg(a, b, v):
-    r = tuple([int(a[i]*(1-v) + b[i]*v) for i in (0, 1, 2)])
+    r = tuple((int(a[i]*(1-v) + b[i]*v)) for i in (0, 1, 2))
     return r
 
 
 def formatcolor(c):
-    return '#%02x%02x%02x' % c
+    return f"#{c[0]:02x}{c[1]:02x}{c[2]:02x}"
 
 
 class Amplifier:
@@ -285,11 +279,8 @@ class Amplifier:
                 # XXX: confirm if this formula is correct
                 level = 1-float(average-self.ofs)/(self.nsteps)
 
-        if level < 0:
-            level = 0
-        if level > 1:
-            level = 1
-
+        level = max(level, 0)
+        level = min(level, 1)
         zerocolor = (200, 200, 200)
         fullcolor = (0, 0, 255)
         color = coloravg(zerocolor, fullcolor, level)
@@ -299,7 +290,7 @@ class Amplifier:
 
 class Node:
     node_info_re = re.compile(
-        '^Node (0x[0-9a-f]*) \[(.*?)\] wcaps 0x[0-9a-f]*?: (.*)$')
+        r'^Node (0x[0-9a-f]*) \[(.*?)\] wcaps 0x[0-9a-f]*?: (.*)$')
     final_hex_re = re.compile(' *(0x[0-9a-f]*)$')
 
     def __init__(self, codec, item, subitems):
@@ -310,7 +301,6 @@ class Node:
         fields = {}
 
         # split first line and get some fields
-        data = item.split(' ')
         m = self.node_info_re.match(item)
         self.nid = int(m.group(1), 16)
         self.type = m.group(2)
@@ -319,10 +309,10 @@ class Node:
         self.wcaps = wcapstr.split()
 
         # parse all items on the node information
-        for item, subitems in self.subitems:
+        for inner_item, innter_subitems in self.subitems:
             # Parse node fields
-            if ':' in item:
-                f, v = item.split(':', 1)
+            if ':' in inner_item:
+                f, v = inner_item.split(':', 1)
                 v = v.lstrip()
 
                 # strip hex number at the end.
@@ -334,12 +324,12 @@ class Node:
 
                     # store the hex value and the
                     # string, on different keys
-                    fields[f+'-hex'] = m.group(1), subitems
-                    fields[f] = v, subitems
+                    fields[f+'-hex'] = m.group(1), innter_subitems
+                    fields[f] = v, innter_subitems
                 else:
-                    fields[f] = v, subitems
+                    fields[f] = v, innter_subitems
             else:
-                sys.stderr.write("Unknown node item: %s\n" % (item))
+                sys.stderr.write(f"Unknown node item: {item}\n")
 
         self.fields = fields
 
@@ -350,8 +340,8 @@ class Node:
         self.num_inputs = int(number)
         conns = []
         self.active_conn = None
-        for i, sub in items:
-            for j in i.split():
+        for i in items:
+            for j in i[0].split():
                 active = j.endswith('*')
                 j = j.rstrip('*')
                 nid = int(j, 16)
@@ -366,7 +356,7 @@ class Node:
 
         # parse amplifier info
         def parse_amps(name, count):
-            capstr = fields['%s caps' % (name)][0]
+            capstr = fields[f'{name} caps'][0]
 
             if capstr == 'N/A':
                 capstr = 'ofs=0x00, nsteps=0x00, stepsize=0x00, mute=0'
@@ -378,13 +368,13 @@ class Node:
                 cname, cval = cap.split('=', 1)
                 caps[cname] = cval
 
-            valstr = fields['%s vals' % (name)][0]
+            valstr = fields[f'{name} vals'][0]
             vals = re.findall(r'\[([^]]*)\]', valstr)
 
             # warn if Amp-In vals field is broken
             if count != len(vals):
                 sys.stderr.write(
-                    "Node 0x%02x: Amp-In vals count is wrong: values found: %d. expected: %d\n" % (self.nid, len(vals), count))
+                    f"Node 0x{self.nid:02x}: Amp-In vals count is wrong: values found: {len(vals)}. expected: {count}\n")
 
             amps = []
             for i in range(count):
@@ -405,7 +395,7 @@ class Node:
         if inamps > 0:
             self.inamps = parse_amps('Amp-In', inamps)
         if self.has_outamp():
-            self.outamp, = parse_amps('Amp-Out', 1)
+            self.outamp = parse_amps('Amp-Out', 1)[0]
 
         self.outputs = []
 
@@ -423,13 +413,13 @@ class Node:
         return False
 
     def idstring(self):
-        return 'nid-%02x' % (self.nid)
+        return f'nid-{self.nid:02x}'
 
     def has_outamp(self):
         return 'Amp-Out' in self.wcaps
 
     def outamp_id(self):
-        return '"%s-ampout"' % (self.idstring())
+        return f'"{self.idstring()}-ampout"'
 
     def out_id(self):
         if self.is_divided():
@@ -450,15 +440,14 @@ class Node:
     def num_inamps(self):
         if not self.has_inamp():
             return 0
-        elif self.many_ampins():
+        if self.many_ampins():
             return self.num_inputs
-        else:
-            return 1
+        return 1
 
     def inamp_id(self, orignid):
         if self.many_ampins():
-            return '"%s-ampin-%s"' % (self.idstring(), orignid)
-        return '"%s-ampin"' % (self.idstring())
+            return f'"{self.idstring()}-ampin-{orignid}"'
+        return f'"{self.idstring()}-ampin"'
 
     def in_id(self, orignid):
         if self.is_divided():
@@ -471,15 +460,15 @@ class Node:
 
     def main_id(self):
         assert not self.is_divided()
-        return '"%s"' % (self.idstring())
+        return f'"{self.idstring()}"'
 
     def main_input_id(self):
         assert self.is_divided()
-        return '"%s-in"' % (self.idstring())
+        return f'"{self.idstring()}-in"'
 
     def main_output_id(self):
         assert self.is_divided()
-        return '"%s-out"' % (self.idstring())
+        return f'"{self.idstring()}-out"'
 
     def inamp_next_id(self):
         """ID of the node where the In-Amp would be connected"""
@@ -501,21 +490,21 @@ class Node:
         return ' '.join(show)
 
     def label(self):
-        r = '0x%02x' % (self.nid)
-        #print(('// %r') % (self.fields))
+        r = f'{self.nid} (0x{self.nid:02x})'
+
         pdef = self.fields.get('Pin Default')
         if pdef:
-            pdef, subdirs = pdef
-            r += '\\n%s' % (pdef)
+            pdef = pdef[0]
+            r += f'\\n{pdef}'
 
-        r += '\\n%s' % (self.wcaps_label())
+        r += f'\\n{self.wcaps_label()}'
 
         pincap = self.fields.get('Pincap')
         if pincap:
-            pincap, subdirs = pincap
-            r += '\\n%s' % (pincap)
+            pincap = pincap[0]
+            r += f'\\n{pincap}'
 
-        r = '"%s"' % (r)
+        r = f'"{r}"'
         return r
 
     def show_input(self):
@@ -541,11 +530,11 @@ class Node:
         }
         return shape_dict.get(self.type, default_attrs)
 
-    def new_node(self, f, id, attrs):
-        f.write(' %s ' % (id))
+    def new_node(self, f, node_id, attrs):
+        f.write(f' {node_id} ')
         if attrs:
-            attrstr = ', '.join('%s=%s' % (f, v) for f, v in attrs)
-            f.write('[%s]' % (attrstr))
+            attrstr = ', '.join(f'{f}={v}' for f, v in attrs)
+            f.write(f'[{attrstr}]')
         f.write('\n')
 
     def dump_main_input(self, f):
@@ -566,38 +555,37 @@ class Node:
             if self.show_input() or self.show_output():
                 self.new_node(f, self.main_id(), self.get_attrs())
         else:
-            self.dump_main_input()
-            self.dump_main_output()
+            self.dump_main_input(f)
+            self.dump_main_output(f)
 
-    def show_amp(self, f, id, type, frm, to, label='', color=None):
+    def show_amp(self, f, node_id, frm, to, label='', color=None):
         if color is None:
             fill = ''
         else:
-            fill = ' color="%s"' % (color)
-
+            fill = f' color="{color}"'
         f.write(
-            '  %s [label = "%s", shape=triangle orientation=-90%s];\n' % (id, label, fill))
+            f'  {node_id} [label = "{label}", shape=triangle orientation=-90{fill}];\n')
         f.write(
-            '  %s -> %s [arrowsize=0.5, arrowtail=dot, weight=2.0%s];\n' % (frm, to, fill))
+            f'  {frm} -> {to} [arrowsize=0.5, arrowtail=dot, weight=2.0{fill}];\n')
 
     def dump_out_amps(self, f):
         if self.show_output() and self.has_outamp():
-            self.show_amp(f, self.outamp_id(), "Out", self.outamp_next_id(
+            self.show_amp(f, self.outamp_id(), self.outamp_next_id(
             ), self.outamp_id(), '', self.outamp.color())
 
     def dump_in_amps(self, f):
         if self.show_input() and self.has_inamp():
 
             if self.many_ampins():
-                amporigins = [("%d (0x%02x)" % (n, self.inputs[n]),
+                amporigins = [(f"{n} (0x{self.inputs[n]:02x})",
                                self.inputs[n]) for n in range(len(self.inputs))]
             else:
                 amporigins = [('', None)]
 
-            for i in range(len(amporigins)):
-                label, origin = amporigins[i]
+            for i, amporigin in enumerate(amporigins):
+                label, origin = amporigin
                 ampid = self.inamp_id(origin)
-                self.show_amp(f, ampid, "In", ampid,
+                self.show_amp(f, ampid, ampid,
                               self.inamp_next_id(), label, self.inamps[i].color())
 
     def dump_amps(self, f):
@@ -612,21 +600,21 @@ class Node:
         return False
 
     def dump_graph(self, f):
-        name = "cluster-%s" % (self.idstring())
+        name = f"cluster-{self.idstring()}"
         if self.is_divided():
-            f.write('subgraph "%s-in" {\n' % (name))
+            f.write(f'subgraph "{name}-in" ' + '{\n')
             f.write('  pencolor="gray80"\n')
             self.dump_main_input(f)
             self.dump_out_amps(f)
             f.write('}\n')
 
-            f.write('subgraph "%s-out" {\n' % (name))
+            f.write(f'subgraph "{name}-out" ' + '{\n')
             f.write('  pencolor="gray80"\n')
             self.dump_main_output(f)
             self.dump_in_amps(f)
             f.write('}\n')
         else:
-            f.write('subgraph "%s" {\n' % (name))
+            f.write(f'subgraph "{name}" ' + '{\n')
             f.write('  pencolor="gray80"\n')
             self.dump_main(f)
             self.dump_amps(f)
@@ -637,8 +625,7 @@ class Node:
                 attrs = "[color=gray20]"
             else:
                 attrs = "[color=gray style=dashed]"
-            f.write('%s -> %s %s;\n' %
-                    (origin.out_id(), self.in_id(origin.nid), attrs))
+            f.write(f'{origin.out_id()} -> {self.in_id(origin.nid)} {attrs};\n')
 
 
 re_indent = re.compile("^ *")
@@ -674,11 +661,12 @@ class CodecInfo:
                     continue
                 else:
                     sys.stderr.write(
-                        "Warning: line %d ignored: %s\n" % (line, item))
+                        f"Warning: line {line} ignored: {item}\n")
+
             except Exception:
-                sys.stderr.write('Exception around line %d\n' % (line))
-                sys.stderr.write('item: %r\n' % (item))
-                sys.stderr.write('subitems: %r\n' % (subitems))
+                sys.stderr.write(f'Exception around line {line}\n')
+                sys.stderr.write(f'item: {item}\n')
+                sys.stderr.write(f'subitems: {subitems}\n)')
                 raise
 
         self.create_out_lists()
@@ -688,9 +676,9 @@ class CodecInfo:
         if not n:
             # create a fake node
             n = Node(
-                self, 'Node 0x%02x [Unknown Node] wcaps 0x0000: ' % (nid), [])
+                self, f'Node 0x{nid:02x} [Unknown Node] wcaps 0x0000: ', [])
             self.nodes[nid] = n
-            n.label = lambda: ('"Unknown Node 0x%02x"' % (nid))
+            n.label = lambda: (f'"Unknown Node 0x{nid:02x}"')
         return n
 
     def create_out_lists(self):
@@ -699,11 +687,11 @@ class CodecInfo:
                 i.new_output(n.nid)
 
     def dump(self):
-        print(("Codec: %s") % (self.fields['Codec']))
-        print(("Nodes: %d") % (len(self.nodes)))
+        print(f"Codec: {self.fields['Codec']}")
+        print(f"Nodes: {len(self.nodes)}")
         for n in list(self.nodes.values()):
-            print(("Node: 0x%02x") % (n.nid), end=' ')
-            print((" %d conns") % (n.num_inputs))
+            print(f"Node: 0x{n.nid:02x}", end=' ')
+            print(f" {n.num_inputs} conns")
 
     def dump_graph(self):
         createtmp()
