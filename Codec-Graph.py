@@ -29,6 +29,7 @@ import platform
 import webbrowser
 import shutil
 import subprocess
+import tempfile
 import logging
 from logging import handlers
 import tkinter
@@ -40,6 +41,7 @@ ALL_NODES = False
 outputname = "codecdump"
 outputfilename = outputname + ".svg"
 documents_dir = os.path.join(os.path.expanduser("~"), "Documents")
+tmp_dir = tempfile.mkdtemp()
 
 # logging
 if platform.system() == "Darwin":
@@ -123,10 +125,7 @@ def CheckGraphviz():
 
 
 def openFileClicked():
-    filetypes = [
-        ('txt files', '*.txt')
-    ]
-    inputfile = filedialog.askopenfilename(filetypes=filetypes)
+    inputfile = filedialog.askopenfilename(initialdir=documents_dir, filetypes=[('txt files', '*.txt')])
     if inputfile != '':
         logging.info("Selected Codec Dump %s", inputfile)
 
@@ -140,7 +139,7 @@ def openFileClicked():
         # running graphviz
         # usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
         rungraphviz = os.system(
-            f'dot -Tsvg -o"{f.name}" ./tmp/dotfile.txt')
+            f'dot -Tsvg -o"{f.name}" {dotfile}')
 
         if rungraphviz == 0:
             logging.info("Running Graphviz succeed")
@@ -172,37 +171,18 @@ fm3.pack(pady=10)
 fm4.pack(pady=10)
 
 # working directory
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-working_dir = os.getcwd()
-dotfile = working_dir + "/tmp/dotfile.txt"
-logging.info("Current working directory: %s", working_dir)
+# os.chdir(os.path.dirname(os.path.abspath(__file__)))
+# working_dir = os.getcwd()
+dotfile = os.path.join(tmp_dir, "dotfile.txt")
 logging.info("Dotfile path %s", dotfile)
 
 
-def createtmp():  # create tmp folder
-    createtmp = './tmp'
-    if os.path.exists(createtmp):
-        shutil.rmtree(createtmp)
-        logging.info("Found an existing tmp directory")
-    os.makedirs(createtmp)
-    logging.info("Created tmp directory")
-
-
 def removetmp():  # removing the temp folder
-    shutil.rmtree('./tmp/')
-    if os.path.exists("./tmp"):
+    shutil.rmtree(tmp_dir)
+    if os.path.exists(tmp_dir):
         logging.error("Removing tmp directory failed")
     else:
         logging.info("Removing tmp directory succeed")
-
-
-def createoutputdir():  # Create output folder
-    createoutput = 'output'
-    if os.path.exists(createoutput):
-        shutil.rmtree(createoutput)  # Remove existing ouput folder
-        logging.info("Found an existing output directory")
-    os.makedirs(createoutput)
-    logging.info("Created output directory")
 
 
 def indentlevel(line):
@@ -679,7 +659,6 @@ class CodecInfo:
             print(f" {n.num_inputs} conns")
 
     def dump_graph(self):
-        createtmp()
         with open(dotfile, "w", encoding='utf-8') as file:
             file.write('digraph {\n')
             file.write("""rankdir=LR
@@ -689,7 +668,6 @@ class CodecInfo:
                 n.dump_graph(file)
             file.write('}\n')
             logging.info("Wrote dotfile")
-        createoutputdir()
 
 
 root.protocol("WM_DELETE_WINDOW", end)
