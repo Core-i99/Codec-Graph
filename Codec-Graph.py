@@ -247,7 +247,7 @@ def parse_items(level, lines):
 
 
 def coloravg(a, b, v):
-    r = tuple([int(a[i]*(1-v) + b[i]*v) for i in (0, 1, 2)])
+    r = tuple((int(a[i]*(1-v) + b[i]*v)) for i in (0, 1, 2))
     return r
 
 
@@ -279,11 +279,8 @@ class Amplifier:
                 # XXX: confirm if this formula is correct
                 level = 1-float(average-self.ofs)/(self.nsteps)
 
-        if level < 0:
-            level = 0
-        if level > 1:
-            level = 1
-
+        level = max(level, 0)
+        level = min(level, 1)
         zerocolor = (200, 200, 200)
         fullcolor = (0, 0, 255)
         color = coloravg(zerocolor, fullcolor, level)
@@ -343,8 +340,8 @@ class Node:
         self.num_inputs = int(number)
         conns = []
         self.active_conn = None
-        for i, sub in items:
-            for j in i.split():
+        for i in items:
+            for j in i[0].split():
                 active = j.endswith('*')
                 j = j.rstrip('*')
                 nid = int(j, 16)
