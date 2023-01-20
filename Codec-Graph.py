@@ -39,6 +39,7 @@ Version = "V1.4"
 ALL_NODES = False
 outputname = "codecdump"
 outputfilename = outputname + ".svg"
+documents_dir = os.path.join(os.path.expanduser("~"), "Documents")
 
 # logging
 if platform.system() == "Darwin":
@@ -97,7 +98,7 @@ def centerwindow():
     root.geometry(f"{app_width}x{app_height}+{x_cordinate}+{y_cordinate}")
 
 
-centerwindow()  # center the gui window on the screen
+centerwindow()
 
 
 def showinfo():
@@ -126,28 +127,29 @@ def openFileClicked():
         ('txt files', '*.txt')
     ]
     inputfile = filedialog.askopenfilename(filetypes=filetypes)
-    # if inputfile isn't an empty string (some file is selected)
     if inputfile != '':
         logging.info("Selected Codec Dump %s", inputfile)
 
         with open(inputfile, "r", encoding="utf-8") as f:
             ci = CodecInfo(f)
             ci.dump_graph()
+        
+        # open file dialog
+        f = filedialog.asksaveasfile(initialfile='Codec-Dump.svg', initialdir=documents_dir ,defaultextension=".svg", filetypes=[("SVG files", "*.svg")])
 
         # running graphviz
         # usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
         rungraphviz = os.system(
-            "dot -Tsvg -o./output/" + outputfilename + " ./tmp/dotfile.txt")
+            f'dot -Tsvg -o"{f.name}" ./tmp/dotfile.txt')
 
         if rungraphviz == 0:
             logging.info("Running Graphviz succeed")
+            removetmp()
+            tkinter.messagebox.showinfo("Finished", "Done! The file is saved.")
 
         if rungraphviz == 1:
             tkinter.messagebox.showerror(
                 "Error", "Running graphviz failed!\nPlease check if graphviz is installed using the button for it.")
-
-        removetmp()
-        CreateDecDump()
 
 
 def end():
@@ -201,23 +203,6 @@ def createoutputdir():  # Create output folder
         logging.info("Found an existing output directory")
     os.makedirs(createoutput)
     logging.info("Created output directory")
-
-
-def CreateDecDump():  # create decimal dump
-    logging.info("Creating decimal dump")
-    with open("./output/" + outputfilename, "r", encoding="utf-8") as f:
-        data = f.readlines()
-        for index, line in enumerate(data):
-            hex_values = re.findall(r'0x[\dA-F]+', line)
-            for hex_value in hex_values:
-                dec_value = str(int(hex_value, 16))
-                line = line.replace(hex_value, dec_value)
-            data[index] = line
-    with open("./output/" + outputname + "dec.svg", "w", encoding="utf-8") as f:
-        f.writelines(data)
-        logging.info("Created decimal svg")
-    tkinter.messagebox.showinfo(
-        "Finished", "Done! Look in the output folder.")
 
 
 def indentlevel(line):
