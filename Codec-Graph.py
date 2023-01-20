@@ -395,7 +395,7 @@ class Node:
         if inamps > 0:
             self.inamps = parse_amps('Amp-In', inamps)
         if self.has_outamp():
-            self.outamp, = parse_amps('Amp-Out', 1)
+            self.outamp = parse_amps('Amp-Out', 1)[0]
 
         self.outputs = []
 
@@ -494,14 +494,14 @@ class Node:
 
         pdef = self.fields.get('Pin Default')
         if pdef:
-            pdef, subdirs = pdef
+            pdef = pdef[0]
             r += f'\\n{pdef}'
 
         r += f'\\n{self.wcaps_label()}'
 
         pincap = self.fields.get('Pincap')
         if pincap:
-            pincap, subdirs = pincap
+            pincap = pincap[0]
             r += f'\\n{pincap}'
 
         r = f'"{r}"'
@@ -530,8 +530,8 @@ class Node:
         }
         return shape_dict.get(self.type, default_attrs)
 
-    def new_node(self, f, id, attrs):
-        f.write(f' {id} ')
+    def new_node(self, f, node_id, attrs):
+        f.write(f' {node_id} ')
         if attrs:
             attrstr = ', '.join(f'{f}={v}' for f, v in attrs)
             f.write(f'[{attrstr}]')
@@ -555,22 +555,22 @@ class Node:
             if self.show_input() or self.show_output():
                 self.new_node(f, self.main_id(), self.get_attrs())
         else:
-            self.dump_main_input()
-            self.dump_main_output()
+            self.dump_main_input(f)
+            self.dump_main_output(f)
 
-    def show_amp(self, f, id, type, frm, to, label='', color=None):
+    def show_amp(self, f, node_id, frm, to, label='', color=None):
         if color is None:
             fill = ''
         else:
             fill = f' color="{color}"'
         f.write(
-            f'  {id} [label = "{label}", shape=triangle orientation=-90{fill}];\n')
+            f'  {node_id} [label = "{label}", shape=triangle orientation=-90{fill}];\n')
         f.write(
             f'  {frm} -> {to} [arrowsize=0.5, arrowtail=dot, weight=2.0{fill}];\n')
 
     def dump_out_amps(self, f):
         if self.show_output() and self.has_outamp():
-            self.show_amp(f, self.outamp_id(), "Out", self.outamp_next_id(
+            self.show_amp(f, self.outamp_id(), self.outamp_next_id(
             ), self.outamp_id(), '', self.outamp.color())
 
     def dump_in_amps(self, f):
@@ -585,7 +585,7 @@ class Node:
             for i, amporigin in enumerate(amporigins):
                 label, origin = amporigin
                 ampid = self.inamp_id(origin)
-                self.show_amp(f, ampid, "In", ampid,
+                self.show_amp(f, ampid, ampid,
                               self.inamp_next_id(), label, self.inamps[i].color())
 
     def dump_amps(self, f):
