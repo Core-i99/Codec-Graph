@@ -109,8 +109,7 @@ def showinfo():
 
 
 def CheckGraphviz():
-    checkGraphviz = subprocess.run(
-        ['dot', '-V'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, check=False, shell=True)
+    checkGraphviz = subprocess.run(["dot", "-V"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True, shell=True)
     if checkGraphviz.returncode == 0:
         tkinter.messagebox.showinfo(
             "Found graphviz", "Found graphviz installation")        
