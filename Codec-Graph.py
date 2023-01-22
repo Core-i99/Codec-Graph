@@ -111,17 +111,16 @@ def showinfo():
 def CheckGraphviz():
     checkGraphviz = subprocess.run(
         ['dot', '-V'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, check=False, shell=True)
-    if checkGraphviz.returncode == 1:
+    if checkGraphviz.returncode == 0:
+        tkinter.messagebox.showinfo(
+            "Found graphviz", "Found graphviz installation")        
+    else:
         errormessage = tkinter.messagebox.showerror(
-            "ERROR", "Couldn't find Graphviz Please follow the instructions to install Graphviz.\n\nClick OK to open instructions how to install GraphViz.")
+            "ERROR", f"Couldn't find Graphviz. Error:{checkGraphviz.returncode}\n\nClick OK to open the instructions on how to install Graphviz.")
         if errormessage == "ok":
             webbrowser.open(
                 "https://github.com/Core-i99/Codec-Graph/blob/main/Graphviz%20Instructions.md")
             logging.info("Opened instructions")
-
-    elif checkGraphviz.returncode == 0:
-        tkinter.messagebox.showinfo(
-            "Found graphviz", "Found graphviz installation")
 
 
 def openFileClicked():
