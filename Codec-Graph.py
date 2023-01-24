@@ -109,10 +109,11 @@ def showinfo():
 
 
 def CheckGraphviz():
-    checkGraphviz = subprocess.run(["dot", "-V"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True, shell=True)
+    checkGraphviz = subprocess.run(["dot", "-V"], stdout=subprocess.DEVNULL,
+                                   stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True, shell=True)
     if checkGraphviz.returncode == 0:
         tkinter.messagebox.showinfo(
-            "Found graphviz", "Found graphviz installation")        
+            "Found graphviz", "Found graphviz installation")
     else:
         errormessage = tkinter.messagebox.showerror(
             "ERROR", f"Couldn't find Graphviz. Error:{checkGraphviz.returncode}\n\nClick OK to open the instructions on how to install Graphviz.")
@@ -123,16 +124,18 @@ def CheckGraphviz():
 
 
 def openFileClicked():
-    inputfile = filedialog.askopenfilename(initialdir=documents_dir, filetypes=[('txt files', '*.txt')])
+    inputfile = filedialog.askopenfilename(
+        initialdir=documents_dir, filetypes=[('txt files', '*.txt')])
     if inputfile != '':
         logging.info("Selected Codec Dump %s", inputfile)
 
         with open(inputfile, "r", encoding="utf-8") as f:
             ci = CodecInfo(f)
             ci.dump_graph()
-        
+
         # open file dialog
-        f = filedialog.asksaveasfile(initialfile='Codec-Dump.svg', initialdir=documents_dir ,defaultextension=".svg", filetypes=[("SVG files", "*.svg")])
+        f = filedialog.asksaveasfile(initialfile='Codec-Dump.svg', initialdir=documents_dir,
+                                     defaultextension=".svg", filetypes=[("SVG files", "*.svg")])
 
         # running graphviz
         # usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
