@@ -20,7 +20,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Codec-Graph macOS
-          path: dist/Codec-Graph.app
+          path: Codec-Graph.zip
       # - name: Upload to Release
       #   if: github.event_name == 'release'
       #   uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
