@@ -25,11 +25,11 @@ jobs:
         with:
           name: Codec-Graph Windows
           path: dist/Codec-Graph.exe
-      # - name: Upload to Release
-      #   if: github.event_name == 'release'
-      #   uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
-      #   with:
-      #     repo_token: ${{ secrets.TOKEN }}
-      #     file: dist/FindOCVersion.exe
-      #     tag: ${{ github.ref }}
-      #     file_glob: true
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
+        with:
+          repo_token: ${{ secrets.TOKEN }}
+          file: dist/Codec-Graph.exe
+          tag: ${{ github.ref }}
+          file_glob: true
