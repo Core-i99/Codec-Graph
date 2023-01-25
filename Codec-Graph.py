@@ -35,7 +35,7 @@ from logging import handlers
 import tkinter
 import tkinter.messagebox
 from tkinter import filedialog
-
+os.chdir(sys._MEIPASS)
 Version = "V1.4"
 ALL_NODES = False
 outputname = "codecdump"
