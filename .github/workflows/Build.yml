@@ -12,6 +12,18 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Zip repository
+        run: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          [System.IO.Compression.ZipFile]::CreateFromDirectory(".", "Codec-Graph.zip")
+      - name: Upload Codec-Graph zip to Release
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
+        with:
+          repo_token: ${{ secrets.TOKEN }}
+          file: dist/Codec-Graph.zip
+          tag: ${{ github.ref }}
+          file_glob: true
       - name: Set up Python 3
         uses: actions/setup-python@v4
         with:
@@ -25,7 +37,7 @@ jobs:
         with:
           name: Codec-Graph Windows
           path: dist/Codec-Graph.exe
-      - name: Upload to Release
+      - name: Upload Windows exe to Release
         if: github.event_name == 'release'
         uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
         with:
