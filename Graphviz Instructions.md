@@ -1,6 +1,7 @@
 ## Installing Graphviz
+See the [Graphviz website](https://graphviz.org/download/#mac) for more information.
 
-### Download Homebrew
+### Install Homebrew
 - Go to the [Homebrew website](https://brew.sh/).
 
 ![](images/Homebrew-Website.jpg)
@@ -11,6 +12,7 @@
 
 - Enter your password when needed.
 
-- Enter the "brew install graphviz" command in terminal.
+### Install Graphviz
+- Run `brew install graphviz`
 
 ![](images/Install-Graphviz.jpg)
