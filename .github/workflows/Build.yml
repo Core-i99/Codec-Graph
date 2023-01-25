@@ -10,11 +10,11 @@ jobs:
   upload-release-zip:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
       - name: Zip repository
         run: |
           zip -r my-repository.zip .
+      - name: Upload
         uses: actions/upload-artifact@v3
         with:
           name: my-repository.zip
