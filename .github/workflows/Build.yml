@@ -8,6 +8,7 @@ on:
 
 jobs:
   upload-release-zip:
+    # if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -18,6 +19,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: my-repository.zip
+          path: my-repository.zip
 
   windows-build:
     name: Build app for Windows
