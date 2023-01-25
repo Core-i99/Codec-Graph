@@ -80,8 +80,20 @@ rotating.setFormatter(
 )
 handler.setLevel(logging.DEBUG)
 
+
+def resource_path(relative_path):
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath("Resources")
+    return os.path.join(base_path, relative_path)
+
+
 root = tkinter.Tk()  # Creating instance of tkinter class
 root.title("Codec Graph")
+if not platform.system() == 'Darwin':
+    root.iconbitmap(resource_path("Icon.ico"))
 root.resizable(False, False)  # Disable rootwindow resizing
 
 fm1 = tkinter.Frame(root)
