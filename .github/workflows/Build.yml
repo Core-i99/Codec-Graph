@@ -8,18 +8,20 @@ on:
 
 jobs:
   upload-release-zip:
-    # if: github.event_name == 'release'
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Zip repository
         run: |
-          zip -r my-repository.zip .
-      - name: Upload
-        uses: actions/upload-artifact@v3
+          zip -r Codec-Graph-Release.zip .
+      - name: Upload Release zip to Release
+        uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
         with:
-          name: my-repository.zip
-          path: my-repository.zip
+          repo_token: ${{ secrets.TOKEN }}
+          file: Codec-Graph-Release
+          tag: ${{ github.ref }}
+          file_glob: true
 
   windows-build:
     name: Build app for Windows
