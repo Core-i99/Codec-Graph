@@ -157,6 +157,7 @@ def openFileClicked():
         if rungraphviz == 0:
             logging.info("Running Graphviz succeed")
             removetmp()
+            Create_dec_codec_dump(inputfile)
             tkinter.messagebox.showinfo("Finished", "Done! The file is saved.")
 
         if rungraphviz == 1:
@@ -196,6 +197,25 @@ def removetmp():  # removing the temp folder
         logging.error("Removing tmp directory failed")
     else:
         logging.info("Removing tmp directory succeed")
+
+
+def Create_dec_codec_dump(inputfile):  # create decimal codec_dump.txt
+    logging.debug("Creating decimal codec dump")
+    with open(inputfile, "r") as f:
+        data = f.readlines()
+        for index, line in enumerate(data):
+            hex_values = re.findall(r'^Node 0x[\dA-F]+', line)
+            for hex_value in hex_values:
+                hex_value = hex_value.replace("Node ", "")
+                dec_value = str(int(hex_value, 16))
+                line = line.replace(hex_value, dec_value)
+            data[index] = line
+
+    codec_dump_dec_file = filedialog.asksaveasfile(
+        initialfile='Codec-Dump-Dec.txt', initialdir=documents_dir, defaultextension=".txt", filetypes=[("TXT files", "*.txt")])
+    with open(codec_dump_dec_file.name, "w") as f:
+        f.writelines(data)
+        logging.debug("Created decimal codec dump")
 
 
 def indentlevel(line):
