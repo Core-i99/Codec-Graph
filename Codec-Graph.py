@@ -697,6 +697,16 @@ class CodecInfo:
             file.write("""
             rankdir=RL
             ranksep=3.0
+            node [shape=plaintext]
+            subgraph cluster_legend { 
+                label = "Node shape and colors";
+                n1 [label=AMP shape=triangle orientation=90 color="#0000ff"]
+                n2 [label="Pin Complex" shape=box  color=green]
+                n3 [label="Amp In" color=red shape=ellipse]
+                n4 [label="Amp Out" color=blue shape=ellipse]
+                n5 [label="Audio Selector" shape=parallelogram]
+                n6 [label="Audio Mixer" shape=hexagon]
+            }
             """)
             for n in list(self.nodes.values()):
                 n.dump_graph(file)
