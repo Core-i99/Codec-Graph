@@ -562,9 +562,9 @@ class Node:
         else:
             fill = f' color="{color}"'
         f.write(
-            f'  {node_id} [label = "{label}", shape=triangle orientation=-90{fill}];\n')
+            f'  {node_id} [label = "{label}", shape=triangle orientation=90{fill}];\n')
         f.write(
-            f'  {frm} -> {to} [arrowsize=0.5, arrowtail=dot, weight=2.0{fill}];\n')
+            f'  {frm} -> {to} [arrowsize=0.5, arrowhead=inv, weight=2.0{fill}];\n')
 
     def dump_out_amps(self, f):
         if self.show_output() and self.has_outamp():
@@ -620,9 +620,9 @@ class Node:
 
         for origin in self.input_nodes():
             if self.is_conn_active(origin.nid):
-                attrs = "[color=gray20]"
+                attrs = "[color=gray20 arrowhead=inv]"
             else:
-                attrs = "[color=gray style=dashed]"
+                attrs = "[color=gray style=dashed arrowhead=inv]"
             f.write(f'{origin.out_id()} -> {self.in_id(origin.nid)} {attrs};\n')
 
 
@@ -694,7 +694,8 @@ class CodecInfo:
     def dump_graph(self):
         with open(dotfile, "w", encoding='utf-8') as file:
             file.write('digraph {\n')
-            file.write("""rankdir=LR
+            file.write("""
+            rankdir=RL
             ranksep=3.0
             """)
             for n in list(self.nodes.values()):
