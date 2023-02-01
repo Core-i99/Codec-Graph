@@ -601,19 +601,19 @@ class Node:
         name = f"cluster-{self.idstring()}"
         if self.is_divided():
             f.write(f'subgraph "{name}-in" ' + '{\n')
-            f.write('  pencolor="gray80"\n')
+            f.write('  label="" pencolor="gray80"\n')
             self.dump_main_input(f)
             self.dump_out_amps(f)
             f.write('}\n')
 
             f.write(f'subgraph "{name}-out" ' + '{\n')
-            f.write('  pencolor="gray80"\n')
+            f.write('  label="" pencolor="gray80"\n')
             self.dump_main_output(f)
             self.dump_in_amps(f)
             f.write('}\n')
         else:
             f.write(f'subgraph "{name}" ' + '{\n')
-            f.write('  pencolor="gray80"\n')
+            f.write('  label="" pencolor="gray80"\n')
             self.dump_main(f)
             self.dump_amps(f)
             f.write('}\n')
@@ -697,6 +697,8 @@ class CodecInfo:
             file.write("""
             rankdir=RL
             ranksep=3.0
+            labelloc="t";
+            label=""" + f'"Codec: {self.fields["Codec"]}\nVendor Id: {self.fields["Vendor Id"]}\nSubsystem Id: {self.fields["Subsystem Id"]}\nRevision Id: {self.fields["Revision Id"]}"' + """;
             node [shape=plaintext]
             subgraph cluster_legend { 
                 label = "Node shape and colors";
