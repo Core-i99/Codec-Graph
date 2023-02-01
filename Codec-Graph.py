@@ -184,9 +184,6 @@ fm2.pack(pady=10)
 fm3.pack(pady=10)
 fm4.pack(pady=10)
 
-# working directory
-# os.chdir(os.path.dirname(os.path.abspath(__file__)))
-# working_dir = os.getcwd()
 dotfile = os.path.join(tmp_dir, "dotfile.txt")
 logging.info("Dotfile path %s", dotfile)
 
@@ -683,13 +680,6 @@ class CodecInfo:
         for n in list(self.nodes.values()):
             for i in n.input_nodes():
                 i.new_output(n.nid)
-
-    def dump(self):
-        print(f"Codec: {self.fields['Codec']}")
-        print(f"Nodes: {len(self.nodes)}")
-        for n in list(self.nodes.values()):
-            print(f"Node: 0x{n.nid:02x}", end=' ')
-            print(f" {n.num_inputs} conns")
 
     def dump_graph(self):
         with open(dotfile, "w", encoding='utf-8') as file:
