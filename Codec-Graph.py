@@ -138,7 +138,7 @@ def CheckGraphviz():
 def openFileClicked():
     inputfile = filedialog.askopenfilename(
         initialdir=documents_dir, filetypes=[('txt files', '*.txt')])
-    if inputfile != '':
+    if inputfile != None:
         logging.info("Selected Codec Dump %s", inputfile)
 
         with open(inputfile, "r", encoding="utf-8") as f:
@@ -148,21 +148,22 @@ def openFileClicked():
         # open file dialog
         f = filedialog.asksaveasfile(initialfile='Codec-Dump.svg', initialdir=documents_dir,
                                      defaultextension=".svg", filetypes=[("SVG files", "*.svg")])
+        if f != None:
+            # running graphviz
+            # usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
+            rungraphviz = os.system(
+                f'dot -Tsvg -o"{f.name}" {dotfile}')
 
-        # running graphviz
-        # usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
-        rungraphviz = os.system(
-            f'dot -Tsvg -o"{f.name}" {dotfile}')
+            if rungraphviz == 0:
+                logging.info("Running Graphviz succeed")
+                tkinter.messagebox.showinfo(
+                    "Finished", "Done! The file is saved.")
 
-        if rungraphviz == 0:
-            logging.info("Running Graphviz succeed")
-            removetmp()
-            Create_dec_codec_dump(inputfile)
-            tkinter.messagebox.showinfo("Finished", "Done! The file is saved.")
-
-        if rungraphviz == 1:
-            tkinter.messagebox.showerror(
-                "Error", "Running graphviz failed!\nPlease check if graphviz is installed using the button for it.")
+            if rungraphviz == 1:
+                tkinter.messagebox.showerror(
+                    "Error", "Running graphviz failed!\nPlease check if graphviz is installed using the button for it.")
+        removetmp()
+        Create_dec_codec_dump(inputfile)
 
 
 def end():
@@ -210,9 +211,10 @@ def Create_dec_codec_dump(inputfile):  # create decimal codec_dump.txt
 
     codec_dump_dec_file = filedialog.asksaveasfile(
         initialfile='Codec-Dump-Dec.txt', initialdir=documents_dir, defaultextension=".txt", filetypes=[("TXT files", "*.txt")])
-    with open(codec_dump_dec_file.name, "w") as f:
-        f.writelines(data)
-        logging.debug("Created decimal codec dump")
+    if codec_dump_dec_file != None:
+        with open(codec_dump_dec_file.name, "w") as f:
+            f.writelines(data)
+            logging.debug("Created decimal codec dump")
 
 
 def indentlevel(line):
