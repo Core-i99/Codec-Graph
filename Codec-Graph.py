@@ -85,10 +85,17 @@ def resource_path(relative_path):
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
-    except Exception:
+    except AttributeError:
         base_path = os.path.abspath("Resources")
     return os.path.join(base_path, relative_path)
 
+def image_path(relative_path):
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath("images")
+    return os.path.join(base_path, relative_path)
 
 root = tkinter.Tk()  # Creating instance of tkinter class
 root.title("Codec Graph")
@@ -709,22 +716,22 @@ class CodecInfo:
                     </TD>
                 </TR>
                 <TR>
-                    <TD><IMG SRC="images/Amp.png" /></TD>
+                    <TD><IMG SRC="{image_path('Amp.png')}" /></TD>
                 </TR>
                 <TR>
-                    <TD><IMG SRC="images/PinComplex.png" /></TD>
+                    <TD><IMG SRC="{image_path('PinComplex.png')}" /></TD>
                 </TR>
                 <TR>
-                    <TD><IMG SRC="images/AmpIn.png" /></TD>
+                    <TD><IMG SRC="{image_path('AmpIn.png')}" /></TD>
                 </TR>
                 <TR>
-                    <TD><IMG SRC="images/AmpOut.png" /></TD>
+                    <TD><IMG SRC="{image_path('AmpOut.png')}" /></TD>
                 </TR>
                 <TR>
-                    <TD><IMG SRC="images/AudioSelector.png" /></TD>
+                    <TD><IMG SRC="{image_path('AudioSelector.png')}" /></TD>
                 </TR>
                 <TR>
-                    <TD><IMG SRC="images/AudioMixer.png" /></TD>
+                    <TD><IMG SRC="{image_path('AudioMixer.png')}" /></TD>
                 </TR>
             </TABLE>>;
             """)

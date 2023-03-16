@@ -35,7 +35,7 @@ jobs:
       - name: Install pyinstaller
         run: pip3 install pyinstaller
       - name: Build
-        run: pyinstaller --onefile --windowed --icon=./Resources/Icon.ico --add-data "./Resources/Icon.ico;." Codec-Graph.py
+        run: pyinstaller --onefile --windowed --icon=./Resources/Icon.ico --add-data "./Resources/Icon.ico;." --add-data "images;." Codec-Graph.py
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v3
         with:
