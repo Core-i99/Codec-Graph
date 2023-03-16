@@ -36,7 +36,7 @@ import tkinter
 import tkinter.messagebox
 from tkinter import filedialog
 
-Version = "V1.4"
+Version = "V1.5"
 ALL_NODES = False
 outputname = "codecdump"
 outputfilename = outputname + ".png"

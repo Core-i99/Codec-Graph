@@ -1,6 +1,21 @@
 CodecGraph Changelog
 ==================
 
+#### v1.5
+- Create decimal codec dump (previously removed)
+- Add legend
+- Add codec info
+- Export as PNG
+
+#### v1.4
+- Create GUI
+
+#### v1.3
+- Updated installing Graphviz instructions
+- Fixed the license
+- Fixed crash when the codec dump file path contains spaces
+- Updated the main script to Python3
+
 #### V1.2
 - Updated installing Graphviz instructions
 - Fixed the license
