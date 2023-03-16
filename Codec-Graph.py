@@ -39,7 +39,7 @@ from tkinter import filedialog
 Version = "V1.4"
 ALL_NODES = False
 outputname = "codecdump"
-outputfilename = outputname + ".svg"
+outputfilename = outputname + ".png"
 documents_dir = os.path.join(os.path.expanduser("~"), "Documents")
 tmp_dir = tempfile.mkdtemp()
 
@@ -85,10 +85,17 @@ def resource_path(relative_path):
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
-    except Exception:
+    except AttributeError:
         base_path = os.path.abspath("Resources")
     return os.path.join(base_path, relative_path)
 
+def image_path(relative_path):
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath("images")
+    return os.path.join(base_path, relative_path)
 
 root = tkinter.Tk()  # Creating instance of tkinter class
 root.title("Codec Graph")
@@ -146,13 +153,13 @@ def openFileClicked():
             ci.dump_graph()
 
         # open file dialog
-        f = filedialog.asksaveasfile(initialfile='Codec-Dump.svg', initialdir=documents_dir,
-                                     defaultextension=".svg", filetypes=[("SVG files", "*.svg")])
+        f = filedialog.asksaveasfile(initialfile='Codec-Dump.png', initialdir=documents_dir,
+                                     defaultextension=".png", filetypes=[("png files", "*.png")])
         if f != None:
             # running graphviz
             # usage of graphviz (dot): dot -T$extention -o$outfile.$extention $inputfile
             rungraphviz = os.system(
-                f'dot -Tsvg -o"{f.name}" {dotfile}')
+                f'dot -Tpng -o"{f.name}" {dotfile}')
 
             if rungraphviz == 0:
                 logging.info("Running Graphviz succeed")
@@ -186,6 +193,7 @@ fm3.pack(pady=10)
 fm4.pack(pady=10)
 
 dotfile = os.path.join(tmp_dir, "dotfile.txt")
+print(dotfile)
 logging.info("Dotfile path %s", dotfile)
 
 
@@ -686,21 +694,46 @@ class CodecInfo:
     def dump_graph(self):
         with open(dotfile, "w", encoding='utf-8') as file:
             file.write('digraph {\n')
-            file.write("""
+            file.write(f"""
             rankdir=RL
             ranksep=3.0
             labelloc="t";
-            label=""" + f'"Codec: {self.fields["Codec"]}\nVendor Id: {self.fields["Vendor Id"]}\nSubsystem Id: {self.fields["Subsystem Id"]}\nRevision Id: {self.fields["Revision Id"]}"' + """;
-            node [shape=plaintext]
-            subgraph cluster_legend { 
-                label = "Node shape and colors";
-                n1 [label=AMP shape=triangle orientation=90 color="#0000ff"]
-                n2 [label="Pin Complex" shape=box  color=green]
-                n3 [label="Amp In" color=red shape=ellipse]
-                n4 [label="Amp Out" color=blue shape=ellipse]
-                n5 [label="Audio Selector" shape=parallelogram]
-                n6 [label="Audio Mixer" shape=hexagon]
-            }
+            labeljust=l;
+            label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+                <TR>
+                    <TD>
+                        <FONT POINT-SIZE="12"><B>Codec: </B>{self.fields["Codec"]}</FONT>
+                    </TD>
+                </TR>
+                <TR>
+                    <TD>
+                        <FONT POINT-SIZE="12"><B>Codec Id: </B>{int(self.fields["Vendor Id"], 16)} ({self.fields["Vendor Id"]})</FONT>
+                    </TD>
+                </TR>
+                <TR>
+                    <TD>
+                        <FONT POINT-SIZE="12"><B>Address: </B>{self.fields["Address"]}</FONT>
+                    </TD>
+                </TR>
+                <TR>
+                    <TD><IMG SRC="{image_path('Amp.png')}" /></TD>
+                </TR>
+                <TR>
+                    <TD><IMG SRC="{image_path('PinComplex.png')}" /></TD>
+                </TR>
+                <TR>
+                    <TD><IMG SRC="{image_path('AmpIn.png')}" /></TD>
+                </TR>
+                <TR>
+                    <TD><IMG SRC="{image_path('AmpOut.png')}" /></TD>
+                </TR>
+                <TR>
+                    <TD><IMG SRC="{image_path('AudioSelector.png')}" /></TD>
+                </TR>
+                <TR>
+                    <TD><IMG SRC="{image_path('AudioMixer.png')}" /></TD>
+                </TR>
+            </TABLE>>;
             """)
             for n in list(self.nodes.values()):
                 n.dump_graph(file)
