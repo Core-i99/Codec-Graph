@@ -294,8 +294,9 @@ class Amplifier:
 
 
 class Node:
-    node_info_re = re.compile(
+    node_info_re_linux = re.compile(
         r'^Node (0x[0-9a-f]*) \[(.*?)\] wcaps 0x[0-9a-f]*?: (.*)$')
+    node_info_re_oc_sysreport = re.compile(r'^Node (0x[0-9a-f]*) \((\d+)\) \[(.*?)\] wcaps 0x[0-9a-f]*?: (.*)$', flags=re.IGNORECASE)
     final_hex_re = re.compile(' *(0x[0-9a-f]*)$')
 
     def __init__(self, codec, item, subitems):
@@ -305,11 +306,23 @@ class Node:
 
         fields = {}
 
+        ### detect which type of codec dump it is ###
+        if self.node_info_re_linux.match(item):
+            dump_type = "linux"
+            self.node_info_re = self.node_info_re_linux
+        elif self.node_info_re_oc_sysreport.match(item):
+            dump_type = "oc_sysreport"
+            self.node_info_re = self.node_info_re_oc_sysreport
+
         # split first line and get some fields
         m = self.node_info_re.match(item)
         self.nid = int(m.group(1), 16)
-        self.type = m.group(2)
-        wcapstr = m.group(3)
+        if dump_type == "linux":
+            self.type = m.group(2)
+            wcapstr = m.group(3)
+        elif dump_type == "oc_sysreport":
+            self.type = m.group(3)
+            wcapstr = m.group(4)
 
         self.wcaps = wcapstr.split()
 

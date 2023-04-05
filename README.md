@@ -1,6 +1,7 @@
 # Codec-Graph
 
-Script to generate Graphviz graphs from HDA-Intel codec information
+Tool to generate Graphviz graphs from HDA-Intel codec information
+The Codec-Graph tool supports analyzing both Linux Alsa dumps and OpenCore SysReport dumps
 
 [![GitHub License](https://img.shields.io/github/license/Core-i99/Codec-Graph?color=informational)](https://github.com/Core-i99/Codec-Graph/blob/main/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/Core-i99/Codec-Graph)](https://GitHub.com/Core-i99/Codec-Graph/releases/)
