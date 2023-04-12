@@ -61,6 +61,19 @@ elif platform.system() == "Windows":
             tkinter.messagebox.showerror("ERROR", "Failed to create log dir")
             sys.exit()
 
+elif platform.system() == "Linux":
+    lib_logs = os.path.join(
+        os.path.expanduser("~"),
+        ".local",
+        "share",
+        "Codec-Graph"
+    )
+    if not os.path.exists(lib_logs):
+        try:
+            os.mkdir(lib_logs)
+        except Exception:
+            tkinter.messagebox.showerror("ERROR", "Failed to create log dir")
+            sys.exit()
 else:
     tkinter.messagebox.showerror("ERROR", "This OS is currently not supported")
     sys.exit()
@@ -99,7 +112,7 @@ def image_path(relative_path):
 
 root = tkinter.Tk()  # Creating instance of tkinter class
 root.title("Codec Graph")
-if not platform.system() == 'Darwin':
+if not platform.system() == 'Darwin' and not platform.system() == 'Linux':
     root.iconbitmap(resource_path("Icon.ico"))
 root.resizable(False, False)  # Disable rootwindow resizing
 
@@ -128,14 +141,15 @@ def showinfo():
 
 
 def CheckGraphviz():
-    checkGraphviz = subprocess.run(["dot", "-V"], stdout=subprocess.DEVNULL,
-                                   stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True, shell=True)
-    if checkGraphviz.returncode == 0:
-        tkinter.messagebox.showinfo(
+    try:
+        checkGraphviz = subprocess.run(["dot", "-V"], stdout=subprocess.DEVNULL,
+                                    stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True, shell=True)
+        if checkGraphviz.returncode == 0:
+            tkinter.messagebox.showinfo(
             "Found graphviz", "Found graphviz installation")
-    else:
+    except subprocess.CalledProcessError as e:
         errormessage = tkinter.messagebox.showerror(
-            "ERROR", f"Couldn't find Graphviz. Error:{checkGraphviz.returncode}\n\nClick OK to open the instructions on how to install Graphviz.")
+            "ERROR", f"Couldn't find Graphviz. Error:{e}\n\nClick OK to open the instructions on how to install Graphviz.")
         if errormessage == "ok":
             webbrowser.open(
                 "https://github.com/Core-i99/Codec-Graph/blob/main/Graphviz%20Instructions.md")
@@ -193,7 +207,6 @@ fm3.pack(pady=10)
 fm4.pack(pady=10)
 
 dotfile = os.path.join(tmp_dir, "dotfile.txt")
-print(dotfile)
 logging.info("Dotfile path %s", dotfile)
 
 

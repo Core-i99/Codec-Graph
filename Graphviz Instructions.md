@@ -23,3 +23,6 @@ See the [Graphviz website](https://graphviz.org/download/#mac) for more informat
 - Run `brew install graphviz`
 
 ![](Images/Install-Graphviz.jpg)
+
+## Linux
+- See the [graphviz website](https://graphviz.org/download/)
